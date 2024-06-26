@@ -2,10 +2,10 @@
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
+#include "common/settings.h"
 #include "video_core/pica/regs_rasterizer.h"
 #include "video_core/shader/generator/shader_gen.h"
 #include "video_core/shader/generator/spv_shader_gen.h"
-#include "common/settings.h"
 
 using VSOutputAttributes = Pica::RasterizerRegs::VSOutputAttributes;
 

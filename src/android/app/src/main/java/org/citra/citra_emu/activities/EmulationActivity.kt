@@ -38,6 +38,7 @@ import org.citra.citra_emu.features.settings.model.IntSetting
 import org.citra.citra_emu.features.settings.model.BooleanSetting
 import org.citra.citra_emu.features.settings.model.SettingsViewModel
 import org.citra.citra_emu.features.settings.model.view.InputBindingSetting
+import org.citra.citra_emu.fragments.EmulationFragment
 import org.citra.citra_emu.fragments.MessageDialogFragment
 import org.citra.citra_emu.utils.ControllerMappingHelper
 import org.citra.citra_emu.utils.EmulationLifecycleUtil
@@ -52,13 +53,19 @@ class EmulationActivity : AppCompatActivity() {
         get() = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
     private var foregroundService: Intent? = null
     var isActivityRecreated = false
-
-    private val settingsViewModel: SettingsViewModel by viewModels()
     private val emulationViewModel: EmulationViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     private lateinit var binding: ActivityEmulationBinding
     private lateinit var screenAdjustmentUtil: ScreenAdjustmentUtil
     private lateinit var hotkeyUtility: HotkeyUtility
+
+    private val emulationFragment: EmulationFragment
+        get() {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+            return navHostFragment.getChildFragmentManager().fragments.last() as EmulationFragment
+        }
 
     private var isEmulationRunning: Boolean = false
 
@@ -224,6 +231,10 @@ class EmulationActivity : AppCompatActivity() {
             return false
         }
 
+        if (emulationFragment.isDrawerOpen()) {
+            return super.dispatchKeyEvent(event)
+        }
+
         val button =
             preferences.getInt(InputBindingSetting.getInputButtonKey(event.keyCode), event.keyCode)
         val action: Int = when (event.action) {
@@ -262,11 +273,9 @@ class EmulationActivity : AppCompatActivity() {
 
     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
         // TODO: Move this check into native code - prevents crash if input pressed before starting emulation
-        if (!NativeLibrary.isRunning()) {
-            return super.dispatchGenericMotionEvent(event)
-        }
-
-        if (event.source and InputDevice.SOURCE_CLASS_JOYSTICK == 0) {
+        if (!NativeLibrary.isRunning() ||
+            (event.source and InputDevice.SOURCE_CLASS_JOYSTICK == 0) ||
+            emulationFragment.isDrawerOpen()) {
             return super.dispatchGenericMotionEvent(event)
         }
 
