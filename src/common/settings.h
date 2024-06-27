@@ -546,7 +546,7 @@ struct Values {
     Setting<bool> use_gdbstub{false, "use_gdbstub"};
     Setting<u16> gdbstub_port{24689, "gdbstub_port"};
 
-    // Hacks
+    // Citra Enhanced Stuff / Tweaks
     SwitchableSetting<bool> raise_cpu_ticks{false, "raise_cpu_ticks"};
     SwitchableSetting<bool> skip_slow_draw{false, "skip_slow_draw"};
     SwitchableSetting<bool> skip_texture_copy{false, "skip_texture_copy"};
@@ -554,6 +554,9 @@ struct Values {
     SwitchableSetting<bool> core_downcount_hack{false, "core_downcount_hack"};
     SwitchableSetting<bool> priority_boost{true, "priority_boost"};
     SwitchableSetting<bool> upscaling_hack{false, "upscaling_hack"};
+    // Reimplementation of old (and a bit broken) citra frameskip
+    // See https://github.com/CitraEnhanced/citra/commit/e279a6955edf644cf832dd329ac72931aea8add7
+    SwitchableSetting<u64> frame_skip{0, "frame_skip"};
     // OpenGL Hack
     SwitchableSetting<bool> gl_stream_buffer_hack{true, "gl_stream_buffer_hack"};
 

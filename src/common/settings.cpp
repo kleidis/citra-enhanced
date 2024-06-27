@@ -81,6 +81,7 @@ void LogSettings() {
     };
 
     LOG_INFO(Config, "Citra Configuration:");
+    log_setting("Core_FrameSkip", values.frame_skip.GetValue());
     log_setting("Core_UseCpuJit", values.use_cpu_jit.GetValue());
     log_setting("Core_CPUClockPercentage", values.cpu_clock_percentage.GetValue());
     log_setting("Core_RaiseCPUTicks", values.raise_cpu_ticks.GetValue());
@@ -183,6 +184,7 @@ void RestoreGlobalState(bool is_powered_on) {
     values.volume.SetGlobal(true);
 
     // Core
+    values.frame_skip.SetGlobal(true);
     values.cpu_clock_percentage.SetGlobal(true);
     values.raise_cpu_ticks.SetGlobal(true);
     values.core_downcount_hack.SetGlobal(true);

@@ -454,6 +454,7 @@ void Config::ReadUtilityValues() {
 void Config::ReadCoreValues() {
     qt_config->beginGroup(QStringLiteral("Core"));
 
+    ReadGlobalSetting(Settings::values.frame_skip);
     ReadGlobalSetting(Settings::values.cpu_clock_percentage);
     ReadGlobalSetting(Settings::values.raise_cpu_ticks);
     ReadGlobalSetting(Settings::values.core_downcount_hack);
@@ -1007,6 +1008,7 @@ void Config::SaveUtilityValues() {
 void Config::SaveCoreValues() {
     qt_config->beginGroup(QStringLiteral("Core"));
 
+    WriteGlobalSetting(Settings::values.frame_skip);
     WriteGlobalSetting(Settings::values.cpu_clock_percentage);
     WriteGlobalSetting(Settings::values.raise_cpu_ticks);
     WriteGlobalSetting(Settings::values.core_downcount_hack);

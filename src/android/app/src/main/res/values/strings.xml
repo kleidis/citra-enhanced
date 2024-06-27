@@ -169,6 +169,8 @@
     <string name="button">Button</string>
 
     <!-- Core settings strings -->
+    <string name="frame_skip_name">Frame Skip</string>
+    <string name="frame_skip_description">The number of frames to skip.\n\nWARNING: Results may vary depending on using the Vulkan or OpenGL renderer. If set too high, the screen may not render at all. Use with caution.</string>
     <string name="cpu_jit">CPU JIT</string>
     <string name="cpu_jit_description">Uses the Just-in-Time (JIT) compiler for CPU emulation. When enabled, game performance will be significantly improved.</string>
     <string name="init_clock">Clock</string>
@@ -597,6 +599,12 @@
     <string name="scaleforce">ScaleForce</string>
     <string name="xbrz">xBRZ</string>
     <string name="mmpx">MMPX</string>
+
+    <!-- Frame skip names -->
+    <string name="disabled">Disabled</string>
+    <string name="x2">x2</string>
+    <string name="x4">x4</string>
+    <string name="x8">x8</string>
 
     <!-- Sound output modes -->
     <string name="mono">Mono</string>

@@ -91,6 +91,10 @@ udp_pad_index=
 # 0 (default): Off, 1: On
 sustained_performance =
 
+# The applied frameskip amount. Must be a power of two.
+# 0 (default): No frameskip, 1: x2 frameskip, 2: x4 frameskip, 3: x8 frameskip, etc.
+frame_skip =
+
 # Whether to use the Just-In-Time (JIT) compiler for CPU emulation
 # 0: Interpreter (slow), 1 (default): JIT (fast)
 use_cpu_jit =

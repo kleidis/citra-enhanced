@@ -1004,6 +1004,17 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                 )
             )
             add(
+                SingleChoiceSetting(
+                    IntSetting.FRAME_SKIP,
+                    R.string.frame_skip_name,
+                    R.string.frame_skip_description,
+                    R.array.frameSkipNames,
+                    R.array.frameSkipValues,
+                    IntSetting.FRAME_SKIP.key,
+                    IntSetting.FRAME_SKIP.defaultValue
+                )
+            )
+            add(
                 SliderSetting(
                     IntSetting.CPU_CLOCK_SPEED,
                     R.string.cpu_clock_speed,

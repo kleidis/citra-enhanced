@@ -121,6 +121,15 @@ void ConfigureDebug::SetConfiguration() {
         }
         ConfigurationShared::SetHighlight(ui->clock_speed_widget,
                                           !Settings::values.cpu_clock_percentage.UsingGlobal());
+
+        // Frameskip
+        ConfigurationShared::SetPerGameSetting(ui->frame_skip_combobox,
+                                               &Settings::values.frame_skip);
+        ConfigurationShared::SetHighlight(ui->widget_frame_skip,
+                                          !Settings::values.frame_skip.UsingGlobal());
+    } else {
+        ui->frame_skip_combobox->setCurrentIndex(
+            static_cast<int>(Settings::values.frame_skip.GetValue()));
     }
 
     ui->slider_clock_speed->setValue(
@@ -151,12 +160,15 @@ void ConfigureDebug::ApplyConfiguration() {
     ConfigurationShared::ApplyPerGameSetting(
         &Settings::values.cpu_clock_percentage, ui->clock_speed_combo,
         [this](s32) { return SliderToSettings(ui->slider_clock_speed->value()); });
+
+    ConfigurationShared::ApplyPerGameSetting(&Settings::values.frame_skip, ui->frame_skip_combobox);
 }
 
 void ConfigureDebug::SetupPerGameUI() {
     // Block the global settings if a game is currently running that overrides them
     if (Settings::IsConfiguringGlobal()) {
         ui->slider_clock_speed->setEnabled(Settings::values.cpu_clock_percentage.UsingGlobal());
+        ui->widget_frame_skip->setEnabled(Settings::values.frame_skip.UsingGlobal());
         return;
     }
 
@@ -164,6 +176,10 @@ void ConfigureDebug::SetupPerGameUI() {
         ui->slider_clock_speed->setEnabled(index == 1);
         ConfigurationShared::SetHighlight(ui->clock_speed_widget, index == 1);
     });
+
+    ConfigurationShared::SetColoredComboBox(
+        ui->frame_skip_combobox, ui->widget_frame_skip,
+        static_cast<int>(Settings::values.frame_skip.GetValue(true)));
 
     ui->groupBox->setVisible(false);
     ui->groupBox_2->setVisible(false);
