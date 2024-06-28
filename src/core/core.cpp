@@ -259,7 +259,7 @@ static void LoadOverrides(u64 title_id) {
         title_id == 0x0004000000055F00 || title_id == 0x0004000000076500) {
         // Luigi's Mansion: Dark Moon
         Settings::values.raise_cpu_ticks = true;
-#ifdef ENABLE_VULKAN
+#if defined(ENABLE_VULKAN)
     } else if (title_id == 0x0004000000030500 || title_id == 0x0004000000032D00 ||
                title_id == 0x0004000000033C00) {
         // Super Street Fighter IV: 3D Edition
@@ -272,7 +272,7 @@ static void LoadOverrides(u64 title_id) {
         Settings::values.skip_texture_copy = true;
     }
 
-#ifdef ENABLE_OPENGL
+#if defined(ENABLE_OPENGL)
     // This gamelist have problems with stream buffer hack from opengl
     const std::array<u64, 11> no_gl_sb_hack_ids = {
         0x000400000019E700, // Armed Blue Gunvolt
@@ -316,7 +316,7 @@ static void LoadOverrides(u64 title_id) {
 
     // This gamelist requires accurate multiplication to render properly
     // Seems to be fine for PC platform, so enable for android only
-#ifdef ANDROID
+#if defined(ANDROID)
     const std::array<u64, 10> accurate_mul_ids = {
         0x0004000000033400, // The Legend of Zelda: Ocarina of Time 3D
         0x0004000000033500, // The Legend of Zelda: Ocarina of Time 3D
