@@ -78,6 +78,8 @@ void ConfigureGeneral::SetConfiguration() {
             UISettings::values.mute_when_in_background.GetValue());
         ui->toggle_hide_mouse->setChecked(UISettings::values.hide_mouse.GetValue());
 
+        ui->toggle_raise_cpu_ticks->setChecked(Settings::values.raise_cpu_ticks.GetValue());
+
         ui->toggle_update_check->setChecked(
             UISettings::values.check_for_update_on_start.GetValue());
         ui->toggle_auto_update->setChecked(UISettings::values.update_on_close.GetValue());
@@ -178,6 +180,8 @@ void ConfigureGeneral::ApplyConfiguration() {
         UISettings::values.pause_when_in_background = ui->toggle_background_pause->isChecked();
         UISettings::values.mute_when_in_background = ui->toggle_background_mute->isChecked();
         UISettings::values.hide_mouse = ui->toggle_hide_mouse->isChecked();
+
+        Settings::values.raise_cpu_ticks = ui->toggle_raise_cpu_ticks->isChecked();
 
         UISettings::values.check_for_update_on_start = ui->toggle_update_check->isChecked();
         UISettings::values.update_on_close = ui->toggle_auto_update->isChecked();

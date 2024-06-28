@@ -88,7 +88,17 @@
        <property name="title">
         <string>Emulation</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QCheckBox" name="toggle_raise_cpu_ticks">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sets 16000 CPU ticks. May improve the performance or decrease, depending of the game or if it is a low-end device&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Raise CPU Ticks</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QWidget" name="widget_region" native="true">
           <layout class="QHBoxLayout" name="region_layout">

@@ -184,6 +184,15 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
         sl.apply {
             add(
                 SwitchSetting(
+                    IntSetting.RAISE_CPU_TICKS,
+                    R.string.raise_cpu_ticks,
+                    R.string.raise_cpu_ticks_description,
+                    IntSetting.RAISE_CPU_TICKS.key,
+                    IntSetting.RAISE_CPU_TICKS.defaultValue
+                )
+            )
+            add(
+                SwitchSetting(
                     IntSetting.SUSTAINED_PERFORMANCE,
                     R.string.sustained_performance,
                     R.string.sustained_performance_description,
@@ -1054,15 +1063,6 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     R.string.vsync_description,
                     IntSetting.VSYNC.key,
                     IntSetting.VSYNC.defaultValue
-                )
-            )
-            add(
-                SwitchSetting(
-                    IntSetting.RAISE_CPU_TICKS,
-                    R.string.raise_cpu_ticks,
-                    R.string.raise_cpu_ticks_description,
-                    IntSetting.RAISE_CPU_TICKS.key,
-                    IntSetting.RAISE_CPU_TICKS.defaultValue
                 )
             )
             add(

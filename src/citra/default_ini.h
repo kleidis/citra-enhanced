@@ -87,6 +87,10 @@ udp_input_port=
 udp_pad_index=
 
 [Core]
+# Sets 16000 CPU ticks.
+# 0 (default): Off, 1: On
+raise_cpu_ticks =
+
 # The applied frameskip amount. Must be a power of two.
 # 0 (default): No frameskip, 1: x2 frameskip, 2: x4 frameskip, 3: x8 frameskip, etc.
 frame_skip =
@@ -100,10 +104,6 @@ use_cpu_jit =
 # Overclocking may fix lag that happens on console, but also comes with the risk of freezing.
 # Range is any positive integer (but we suspect 25 - 400 is a good idea) Default is 100
 cpu_clock_percentage =
-
-# Adds 16000 CPU ticks.
-# 0 (default): Off, 1: On
-raise_cpu_ticks =
 
 # Downcount will be limited to a smaller time slice.
 # 0 (default): Off, 1: On

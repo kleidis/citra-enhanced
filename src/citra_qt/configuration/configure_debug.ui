@@ -291,17 +291,7 @@
       <string>Tweaks</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-     <item row="1" column="0">
-       <widget class="QCheckBox" name="toggle_raise_cpu_ticks">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sets 16000 CPU ticks. May improve the performance or decrease, depending of the game or if it is a low-end device&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string>Raise CPU Ticks</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item row="1" column="0">
        <widget class="QCheckBox" name="toggle_core_downcount_hack">
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, core downcount will be limited to a smaller time slice, reducing CPU usage. It may reduce the performance, or might help for low-end devices or GPU hungry games&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -311,7 +301,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="2" column="0">
        <widget class="QCheckBox" name="toggle_priority_boost">
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Boost low priority starved threads during kernel rescheduling. This might improve the performance&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
