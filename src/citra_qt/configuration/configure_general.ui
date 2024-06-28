@@ -88,7 +88,7 @@
        <property name="title">
         <string>Emulation</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QCheckBox" name="toggle_raise_cpu_ticks">
           <property name="toolTip">

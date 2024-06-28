@@ -2367,6 +2367,11 @@ Would you like to ignore the error and continue?</source>
         <translation>Activar Modo New 3DS</translation>
     </message>
     <message>
+        <location filename="../../src/citra_qt/configuration/configure_system.ui" line="31"/>
+        <source>The New 3DS has different memory and processor, and some games can only start on the New 3DS.</source>
+        <translation>El New 3DS tiene una memoria y un procesador diferentes, y algunos juegos solo pueden iniciarse en el New 3DS.</translation>
+    </message>
+    <message>
         <location filename="../../src/citra_qt/configuration/configure_system.ui" line="35"/>
         <source>Use LLE applets (if installed)</source>
         <translation>Usar applets LLE (si están instaladas)</translation>
