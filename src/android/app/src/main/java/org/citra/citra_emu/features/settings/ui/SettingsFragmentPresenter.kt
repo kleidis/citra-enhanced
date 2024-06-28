@@ -38,6 +38,7 @@ import org.citra.citra_emu.features.settings.model.view.SwitchSetting
 import org.citra.citra_emu.features.settings.utils.SettingsFile
 import org.citra.citra_emu.fragments.ResetSettingsDialogFragment
 import org.citra.citra_emu.utils.BirthdayMonth
+import org.citra.citra_emu.utils.GpuDriverHelper
 import org.citra.citra_emu.utils.Log
 import org.citra.citra_emu.utils.SystemSaveGame
 import org.citra.citra_emu.utils.ThemeUtil
@@ -778,6 +779,17 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     IntSetting.SHADERS_ACCURATE_MUL.defaultValue
                 )
             )
+            if (GpuDriverHelper.supportsCustomDriverLoading()) {
+                add(
+                    SwitchSetting(
+                        BooleanSetting.ADRENO_GPU_BOOST,
+                        R.string.adreno_gpu_boost,
+                        R.string.adreno_gpu_boost_description,
+                        BooleanSetting.ADRENO_GPU_BOOST.key,
+                        BooleanSetting.ADRENO_GPU_BOOST.defaultValue
+                    )
+                )
+            }
             add(
                 SwitchSetting(
                     IntSetting.DISK_SHADER_CACHE,
@@ -785,15 +797,6 @@ class SettingsFragmentPresenter(private val fragmentView: SettingsFragmentView) 
                     R.string.use_disk_shader_cache_description,
                     IntSetting.DISK_SHADER_CACHE.key,
                     IntSetting.DISK_SHADER_CACHE.defaultValue
-                )
-            )
-            add(
-                SwitchSetting(
-                    BooleanSetting.FORCE_MAX_GPU_CLOCKS,
-                    R.string.force_max_gpu_clocks,
-                    R.string.force_max_gpu_clocks_description,
-                    BooleanSetting.FORCE_MAX_GPU_CLOCKS.key,
-                    BooleanSetting.FORCE_MAX_GPU_CLOCKS.defaultValue
                 )
             )
             add(

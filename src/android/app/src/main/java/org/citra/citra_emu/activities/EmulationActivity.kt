@@ -76,14 +76,12 @@ class EmulationActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
+        NativeLibrary.enableAdrenoTurboMode(BooleanSetting.ADRENO_GPU_BOOST.boolean)
+
         // reduce mhz, helps for throttling reduction
         // at the cost of performance
         if (IntSetting.SUSTAINED_PERFORMANCE.int == 1) {
             window.setSustainedPerformanceMode(true)
-        }
-
-        if (BooleanSetting.FORCE_MAX_GPU_CLOCKS.boolean) {
-            NativeLibrary.enableAdrenoTurboMode(true) 
         }
 
         binding = ActivityEmulationBinding.inflate(layoutInflater)
@@ -146,9 +144,7 @@ class EmulationActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        if (BooleanSetting.FORCE_MAX_GPU_CLOCKS.boolean) {
-            NativeLibrary.enableAdrenoTurboMode(false) 
-        }
+        NativeLibrary.enableAdrenoTurboMode(false)
         EmulationLifecycleUtil.clear()
         stopForegroundService(this)
         isEmulationRunning = false

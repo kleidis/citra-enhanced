@@ -14,7 +14,7 @@ enum class BooleanSetting(
     PLUGIN_LOADER("plugin_loader", Settings.SECTION_SYSTEM, false),
     ALLOW_PLUGIN_LOADER("allow_plugin_loader", Settings.SECTION_SYSTEM, true),
     SWAP_SCREEN("swap_screen", Settings.SECTION_LAYOUT, false),
-    FORCE_MAX_GPU_CLOCKS("force_max_gpu_clocks", Settings.SECTION_RENDERER, false),
+    ADRENO_GPU_BOOST("adreno_gpu_boost", Settings.SECTION_RENDERER, false),
     RELAXED_PRECISION_DECORATORS("relaxed_precision_decorators", Settings.SECTION_RENDERER, false);
 
     override var boolean: Boolean = defaultValue
@@ -36,7 +36,7 @@ enum class BooleanSetting(
         private val NOT_RUNTIME_EDITABLE = listOf(
             PLUGIN_LOADER,
             ALLOW_PLUGIN_LOADER,
-            FORCE_MAX_GPU_CLOCKS,
+            ADRENO_GPU_BOOST,
             RELAXED_PRECISION_DECORATORS
         )
 
