@@ -1,23 +1,23 @@
-From 3958033eda359821c288fbd7dee6226ad115f88f Mon Sep 17 00:00:00 2001
+From 103b74bd3b9e7e84fc11809ec77a54e71c28747f Mon Sep 17 00:00:00 2001
 From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
-Date: Sun, 28 Apr 2024 13:04:31 +0200
-Subject: [PATCH] Fix again
+Date: Sun, 28 Apr 2024 13:00:02 +0200
+Subject: [PATCH] Fix clang-format
 
 ---
- src/common/settings.h | 3 ++-
+ src/android/app/src/main/jni/emu_window/emu_window_gl.cpp | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/src/common/settings.h b/src/common/settings.h
-index b38bf83f8..8b51bf47b 100644
---- a/src/common/settings.h
-+++ b/src/common/settings.h
-@@ -511,7 +511,8 @@ struct Values {
+diff --git a/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp b/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp
+index 5a820aced..37427fd3a 100644
+--- a/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp
++++ b/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp
+@@ -145,7 +145,8 @@ bool EmuWindow_Android_OpenGL::CreateWindowSurface() {
  
-     SwitchableSetting<bool> filter_mode{true, "filter_mode"};
-     SwitchableSetting<std::string> pp_shader_name{"none (builtin)", "pp_shader_name"};
--    SwitchableSetting<std::string> anaglyph_shader_name{"rendepth (builtin)", "anaglyph_shader_name"};
-+    SwitchableSetting<std::string> anaglyph_shader_name{"rendepth (builtin)",
-+                                                        "anaglyph_shader_name"};
+     if (egl_surface == EGL_NO_SURFACE) {
+         EGLint error = eglGetError(); // Get the error code
+-        LOG_CRITICAL(Frontend, "EmuWindow_Android_OpenGL eglCreateWindowSurface() returned error {}", error);
++        LOG_CRITICAL(Frontend,
++                     "EmuWindow_Android_OpenGL eglCreateWindowSurface() returned error {}", error);
+         return true;
+     }
  
-     SwitchableSetting<bool> dump_textures{false, "dump_textures"};
-     SwitchableSetting<bool> custom_textures{false, "custom_textures"};
