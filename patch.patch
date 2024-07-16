@@ -1,27 +1,67 @@
-From 6fc16efe01c6cb141d0ba1fd63eaed97af8a738b Mon Sep 17 00:00:00 2001
+From 275442fa373f59c72253175167e5df612bdda3f0 Mon Sep 17 00:00:00 2001
 From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
-Date: Thu, 2 May 2024 21:04:22 +0200
-Subject: [PATCH] Fix again
+Date: Wed, 24 Apr 2024 10:33:00 +0200
+Subject: [PATCH] Fix android compilation error from
+ https://github.com/Gamer64ytb/Citra-Enhanced/commit/b4503bab59dfb40994b30fbd5393a752a5b3d394
 
 ---
- src/common/profiling.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../main/java/org/citra/citra_emu/overlay/InputOverlay.kt   | 6 +++---
+ .../citra/citra_emu/overlay/InputOverlayDrawableButton.kt   | 2 +-
+ .../org/citra/citra_emu/overlay/InputOverlayDrawableDpad.kt | 1 +
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/src/common/profiling.h b/src/common/profiling.h
-index f5ed2f190..01530cefc 100644
---- a/src/common/profiling.h
-+++ b/src/common/profiling.h
-@@ -8,11 +8,11 @@
- #include <tracy/Tracy.hpp>
- #include "common/scope_exit.h"
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
+index 8b3ea6360..f11b8f640 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
+@@ -87,14 +87,14 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) : SurfaceView(contex
+         }
+         var shouldUpdateView = false
+         for (button in overlayButtons) {
+-            if (!button.updateStatus(event), this) {
++            if (!button.updateStatus(event, this)) {
+                 continue
+             }
+             NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, button.id, button.status)
+             shouldUpdateView = true
+         }
+         for (dpad in overlayDpads) {
+-            if (!dpad.updateStatus(event, EmulationMenuSettings.dpadSlide), this) {
++            if (!dpad.updateStatus(event, EmulationMenuSettings.dpadSlide, this)) {
+                 continue
+             }
+             NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, dpad.upId, dpad.upStatus)
+@@ -116,7 +116,7 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) : SurfaceView(contex
+             shouldUpdateView = true
+         }
+         for (joystick in overlayJoysticks) {
+-            if (!joystick.updateStatus(event), this) {
++            if (!joystick.updateStatus(event, this)) {
+                 continue
+             }
+             val axisID = joystick.joystickId
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableButton.kt b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableButton.kt
+index 1fcb2bd06..f6976c78f 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableButton.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableButton.kt
+@@ -54,7 +54,7 @@ class InputOverlayDrawableButton(
+      *
+      * @return true if value was changed
+      */
+-    fun updateStatus(event: MotionEvent, overlay:InputOverlay): Boolean {
++    fun updateStatus(event: MotionEvent, overlay: InputOverlay): Boolean {
+         val pointerIndex = event.actionIndex
+         val xPosition = event.getX(pointerIndex).toInt()
+         val yPosition = event.getY(pointerIndex).toInt()
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableDpad.kt b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableDpad.kt
+index 994454208..0efaf9539 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableDpad.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlayDrawableDpad.kt
+@@ -9,6 +9,7 @@ import android.graphics.Bitmap
+ import android.graphics.Canvas
+ import android.graphics.Rect
+ import android.graphics.drawable.BitmapDrawable
++import android.view.HapticFeedbackConstants
+ import android.view.MotionEvent
+ import org.citra.citra_emu.NativeLibrary
  
--#define CITRA_PROFILE(scope, text)                                                                \
-+#define CITRA_PROFILE(scope, text)                                                                 \
-     ZoneScopedN(text);                                                                             \
-     ZoneText(scope, std::string::traits_type::length(scope));
- 
--#define CITRA_SCOPED_FRAME(text)                                                                  \
-+#define CITRA_SCOPED_FRAME(text)                                                                   \
-     constexpr const char* CONCAT2(FrameTitle, __LINE__) = text;                                    \
-     detail::ScopeHelper([&]() { FrameMarkStart(CONCAT2(FrameTitle, __LINE__)); },                  \
-                         [&]() { FrameMarkEnd(CONCAT2(FrameTitle, __LINE__)); })
