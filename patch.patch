@@ -1,0 +1,89 @@
+From 1b783ab4efd373676d8fc8b701c2ec03c9fe99a3 Mon Sep 17 00:00:00 2001
+From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
+Date: Fri, 3 May 2024 17:08:49 +0200
+Subject: [PATCH] oboe_sink: use std::shared_ptr to prevent memory leaks
+
+Co-Authored-By: Ishan09811 <156402647+ishan09811@users.noreply.github.com>
+---
+ src/audio_core/oboe_sink.cpp | 29 ++++++++++++++++++++---------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
+
+diff --git a/src/audio_core/oboe_sink.cpp b/src/audio_core/oboe_sink.cpp
+index 559d8f62b..06edc443f 100644
+--- a/src/audio_core/oboe_sink.cpp
++++ b/src/audio_core/oboe_sink.cpp
+@@ -1,5 +1,6 @@
+ #include "oboe_sink.h"
+ 
++#include <memory>
+ #include <oboe/Oboe.h>
+ 
+ #include "audio_core/audio_types.h"
+@@ -12,9 +13,10 @@ class OboeSink::Impl : public oboe::AudioStreamCallback {
+     Impl() = default;
+     ~Impl() override {
+         // Destructor now ensures that the stream is properly stopped and closed
+-        if (mStream) {
++        if (mStream && mStream->getState() != oboe::StreamState::Closed) {
+             mStream->stop();
+             mStream->close();
++            mStream.reset();
+         }
+     }
+ 
+@@ -37,8 +39,12 @@ class OboeSink::Impl : public oboe::AudioStreamCallback {
+     }
+ 
+     bool start() {
++        if (mStream && mStream->getState() != oboe::StreamState::Closed) {
++            mStream->stop();
++            mStream->close();
++        }
+         if (mStream) {
+-            mStream->close(); // Close any existing stream before creating a new one
++            mStream.reset();
+         }
+         oboe::AudioStreamBuilder builder;
+         auto result = builder.setSharingMode(oboe::SharingMode::Exclusive)
+@@ -48,7 +54,7 @@ class OboeSink::Impl : public oboe::AudioStreamCallback {
+                           ->setSampleRate(mSampleRate)
+                           ->setChannelCount(2)
+                           ->setCallback(this)
+-                          ->openManagedStream(mStream);
++                          ->openStream(mStream);
+         if (result != oboe::Result::OK) {
+             LOG_CRITICAL(Audio_Sink, "Error creating playback stream: {}",
+                          oboe::convertToText(result));
+@@ -65,13 +71,18 @@ class OboeSink::Impl : public oboe::AudioStreamCallback {
+     }
+ 
+     void stop() {
+-        if (mStream) {
+-            auto result = mStream->stop();
+-            if (result != oboe::Result::OK) {
++        if (mStream && mStream->getState() != oboe::StreamState::Closed) {
++            auto stopResult = mStream->stop();
++            auto closeResult = mStream->close();
++            if (stopResult != oboe::Result::OK) {
+                 LOG_CRITICAL(Audio_Sink, "Error stopping playback stream: {}",
+-                             oboe::convertToText(result));
++                             oboe::convertToText(stopResult));
++            }
++            if (closeResult != oboe::Result::OK) {
++                LOG_CRITICAL(Audio_Sink, "Error closing playback stream: {}",
++                             oboe::convertToText(closeResult));
+             }
+-            mStream->close(); // Close the stream after stopping
++            mStream.reset();
+         }
+     }
+ 
+@@ -84,7 +95,7 @@ class OboeSink::Impl : public oboe::AudioStreamCallback {
+     }
+ 
+ private:
+-    oboe::ManagedStream mStream;
++    std::shared_ptr<oboe::AudioStream> mStream;
+     std::function<void(s16*, std::size_t)> mCallback;
+     int32_t mSampleRate = native_sample_rate;
+ };
