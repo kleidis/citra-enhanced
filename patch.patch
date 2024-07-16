@@ -1,23 +1,27 @@
-From 103b74bd3b9e7e84fc11809ec77a54e71c28747f Mon Sep 17 00:00:00 2001
+From 6fc16efe01c6cb141d0ba1fd63eaed97af8a738b Mon Sep 17 00:00:00 2001
 From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
-Date: Sun, 28 Apr 2024 13:00:02 +0200
-Subject: [PATCH] Fix clang-format
+Date: Thu, 2 May 2024 21:04:22 +0200
+Subject: [PATCH] Fix again
 
 ---
- src/android/app/src/main/jni/emu_window/emu_window_gl.cpp | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ src/common/profiling.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp b/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp
-index 5a820aced..37427fd3a 100644
---- a/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp
-+++ b/src/android/app/src/main/jni/emu_window/emu_window_gl.cpp
-@@ -145,7 +145,8 @@ bool EmuWindow_Android_OpenGL::CreateWindowSurface() {
+diff --git a/src/common/profiling.h b/src/common/profiling.h
+index f5ed2f190..01530cefc 100644
+--- a/src/common/profiling.h
++++ b/src/common/profiling.h
+@@ -8,11 +8,11 @@
+ #include <tracy/Tracy.hpp>
+ #include "common/scope_exit.h"
  
-     if (egl_surface == EGL_NO_SURFACE) {
-         EGLint error = eglGetError(); // Get the error code
--        LOG_CRITICAL(Frontend, "EmuWindow_Android_OpenGL eglCreateWindowSurface() returned error {}", error);
-+        LOG_CRITICAL(Frontend,
-+                     "EmuWindow_Android_OpenGL eglCreateWindowSurface() returned error {}", error);
-         return true;
-     }
+-#define CITRA_PROFILE(scope, text)                                                                \
++#define CITRA_PROFILE(scope, text)                                                                 \
+     ZoneScopedN(text);                                                                             \
+     ZoneText(scope, std::string::traits_type::length(scope));
  
+-#define CITRA_SCOPED_FRAME(text)                                                                  \
++#define CITRA_SCOPED_FRAME(text)                                                                   \
+     constexpr const char* CONCAT2(FrameTitle, __LINE__) = text;                                    \
+     detail::ScopeHelper([&]() { FrameMarkStart(CONCAT2(FrameTitle, __LINE__)); },                  \
+                         [&]() { FrameMarkEnd(CONCAT2(FrameTitle, __LINE__)); })
