@@ -1,20 +1,312 @@
-From 7dbd63e92a13014cd0801e7b19108e9576f1d538 Mon Sep 17 00:00:00 2001
+From 1fd78cee9a07db8f9f5be4e785317a69403c3ef6 Mon Sep 17 00:00:00 2001
 From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
-Date: Sun, 28 Apr 2024 13:44:49 +0200
-Subject: [PATCH] Fix android build
+Date: Mon, 22 Apr 2024 11:08:34 +0200
+Subject: [PATCH]  Android overlay: possibility to adjust the scale of
+ individual buttons
 
+Co-Authored-By: gperrio <20833261+gperrio@users.noreply.github.com>
 ---
- src/android/app/src/main/res/values/licenses.xml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../citra_emu/fragments/EmulationFragment.kt  | 121 ++++++++++++++++--
+ .../citra/citra_emu/overlay/InputOverlay.kt   |  13 ++
+ .../main/res/menu/menu_overlay_options.xml    |  55 +++++++-
+ .../app/src/main/res/values/strings.xml       |   2 +
+ 4 files changed, 179 insertions(+), 12 deletions(-)
 
-diff --git a/src/android/app/src/main/res/values/licenses.xml b/src/android/app/src/main/res/values/licenses.xml
-index 07f370e0d..69f1f607b 100644
---- a/src/android/app/src/main/res/values/licenses.xml
-+++ b/src/android/app/src/main/res/values/licenses.xml
-@@ -1,5 +1,5 @@
- <?xml version="1.0" encoding="utf-8"?>
--<resources>
-+<resources xmlns:tools="http://schemas.android.com/tools">
-     <string name="license_mit" translatable="false">
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt b/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt
+index 344043793..dcc2fb9eb 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt
+@@ -612,8 +612,83 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+                     true
+                 }
+ 
++                R.id.menu_emulation_adjust_scale_reset_all -> {
++                    resetAllScales()
++                    true
++                }
++
+                 R.id.menu_emulation_adjust_scale -> {
+-                    showAdjustScaleDialog()
++                    showAdjustScaleDialog("controlScale")
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_a -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_A)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_b -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_B)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_x -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_X)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_y -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_Y)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_l -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.TRIGGER_L)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_r -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.TRIGGER_R)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_zl -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_ZL)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_zr -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_ZR)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_start -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_START)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_select -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_SELECT)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_controller_dpad -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.DPAD)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_controller_circlepad -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.STICK_LEFT)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_controller_c -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.STICK_C)
++                    true
++                }
++
++                R.id.menu_emulation_adjust_scale_button_home -> {
++                    showAdjustScaleDialog("controlScale-" + NativeLibrary.ButtonType.BUTTON_HOME)
+                     true
+                 }
+ 
+@@ -767,16 +842,16 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+             .show()
+     }
+ 
+-    private fun showAdjustScaleDialog() {
++    private fun showAdjustScaleDialog(target: String) {
+         val sliderBinding = DialogSliderBinding.inflate(layoutInflater)
+ 
+         sliderBinding.apply {
+             slider.valueTo = 150f
+-            slider.value = preferences.getInt("controlScale", 50).toFloat()
++            slider.value = preferences.getInt(target, 50).toFloat()
+             slider.addOnChangeListener(
+                 Slider.OnChangeListener { slider: Slider, progress: Float, _: Boolean ->
+                     textValue.text = (progress.toInt() + 50).toString()
+-                    setControlScale(slider.value.toInt())
++                    setControlScale(slider.value.toInt(), target)
+                 })
+             textValue.text = (sliderBinding.slider.value.toInt() + 50).toString()
+             textUnits.text = "%"
+@@ -787,13 +862,13 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+             .setTitle(R.string.emulation_control_scale)
+             .setView(sliderBinding.root)
+             .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
+-                setControlScale(previousProgress)
++                setControlScale(previousProgress, target)
+             }
+             .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+-                setControlScale(sliderBinding.slider.value.toInt())
++                setControlScale(sliderBinding.slider.value.toInt(), target)
+             }
+             .setNeutralButton(R.string.slider_default) { _: DialogInterface?, _: Int ->
+-                setControlScale(50)
++                setControlScale(50, target)
+             }
+             .show()
+     }
+@@ -829,9 +904,9 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+             .show()
+     }
+ 
+-    private fun setControlScale(scale: Int) {
++    private fun setControlScale(scale: Int, target: String) {
+         preferences.edit()
+-            .putInt("controlScale", scale)
++            .putInt(target, scale)
+             .apply()
+         binding.surfaceInputOverlay.refreshControls()
+     }
+@@ -843,6 +918,32 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+         binding.surfaceInputOverlay.refreshControls()
+     }
+ 
++    private fun resetScale(target: String) {
++        preferences.edit().putInt(
++            target,
++            50
++        ).apply()
++    }
++
++    private fun resetAllScales() {
++        resetScale("controlScale")
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_A)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_B)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_X)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_Y)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.TRIGGER_L)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.TRIGGER_R)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_ZL)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_ZR)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_START)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_SELECT)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.DPAD)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.STICK_LEFT)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.STICK_C)
++        resetScale("controlScale-" + NativeLibrary.ButtonType.BUTTON_HOME)
++        binding.surfaceInputOverlay.refreshControls()
++    }
++
+     private fun showResetOverlayDialog() {
+         MaterialAlertDialogBuilder(requireContext())
+             .setTitle(getString(R.string.emulation_touch_overlay_reset))
+@@ -854,8 +955,8 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+     }
+ 
+     private fun resetInputOverlay() {
++        resetAllScales()
+         preferences.edit()
+-            .putInt("controlScale", 50)
+             .putInt("controlOpacity", 100)
+             .apply()
+ 
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
+index 67a216be0..b469213c1 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
+@@ -891,6 +891,9 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) : SurfaceView(contex
+             scale *= (preferences.getInt("controlScale", 50) + 50).toFloat()
+             scale /= 100f
+ 
++            scale *= (preferences.getInt("controlScale-$buttonId", 50) + 50).toFloat()
++            scale /= 100f
++
+             val opacity: Int = preferences.getInt("controlOpacity", 100) * 255 / 100
+ 
+             // Initialize the InputOverlayDrawableButton.
+@@ -949,6 +952,13 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) : SurfaceView(contex
+             scale *= (preferences.getInt("controlScale", 50) + 50).toFloat()
+             scale /= 100f
+ 
++            scale *= (preferences.getInt(
++                "controlScale-" + NativeLibrary.ButtonType.DPAD,
++                50
++            ) + 50).toFloat()
++
++            scale /= 100f
++
+             val opacity: Int = preferences.getInt("controlOpacity", 100) * 255 / 100
+ 
+             // Initialize the InputOverlayDrawableDpad.
+@@ -1009,6 +1019,9 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) : SurfaceView(contex
+             scale *= (preferences.getInt("controlScale", 50) + 50).toFloat()
+             scale /= 100f
+ 
++            scale *= (preferences.getInt("controlScale-$joystick", 50) + 50).toFloat()
++            scale /= 100f
++
+             val opacity: Int = preferences.getInt("controlOpacity", 100) * 255 / 100
+ 
+             // Initialize the InputOverlayDrawableJoystick.
+diff --git a/src/android/app/src/main/res/menu/menu_overlay_options.xml b/src/android/app/src/main/res/menu/menu_overlay_options.xml
+index f79c3148b..ffa649b33 100644
+--- a/src/android/app/src/main/res/menu/menu_overlay_options.xml
++++ b/src/android/app/src/main/res/menu/menu_overlay_options.xml
+@@ -20,8 +20,59 @@
+         android:title="@string/emulation_toggle_controls" />
+ 
+     <item
+-        android:id="@+id/menu_emulation_adjust_scale"
+-        android:title="@string/emulation_control_scale" />
++        android:id="@+id/menu_emulation_adjust_scales"
++        android:title="@string/emulation_control_scale">
++        <menu>
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_reset_all"
++                android:title="@string/emulation_control_scale_reset_all" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale"
++                android:title="@string/emulation_control_scale_global" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_a"
++                android:title="@string/button_a" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_b"
++                android:title="@string/button_b" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_x"
++                android:title="@string/button_x" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_y"
++                android:title="@string/button_y" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_l"
++                android:title="@string/button_l" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_r"
++                android:title="@string/button_r" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_zl"
++                android:title="@string/button_zl" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_zr"
++                android:title="@string/button_zr" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_start"
++                android:title="@string/button_start" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_select"
++                android:title="@string/button_select" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_controller_dpad"
++                android:title="@string/controller_dpad" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_controller_circlepad"
++                android:title="@string/controller_circlepad" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_controller_c"
++                android:title="@string/controller_c" />
++            <item
++                android:id="@+id/menu_emulation_adjust_scale_button_home"
++                android:title="@string/button_home" />
++        </menu>
++    </item>
+ 
+     <item
+         android:id="@+id/menu_emulation_adjust_opacity"
+diff --git a/src/android/app/src/main/res/values/strings.xml b/src/android/app/src/main/res/values/strings.xml
+index 66ea2f7e2..8a009fb7a 100644
+--- a/src/android/app/src/main/res/values/strings.xml
++++ b/src/android/app/src/main/res/values/strings.xml
+@@ -330,6 +330,8 @@
+     <string name="emulation_toggle_controls">Toggle Controls</string>
+     <string name="emulation_control_scale">Adjust Scale</string>
+     <string name="emulation_control_opacity">Adjust Opacity</string>
++    <string name="emulation_control_scale_global">Global Scale</string>
++    <string name="emulation_control_scale_reset_all">Reset All</string>
+     <string name="emulation_control_joystick_rel_center">Relative Stick Center</string>
+     <string name="emulation_control_dpad_slide_enable">D-Pad Sliding</string>
+     <string name="emulation_open_settings">Open Settings</string>
