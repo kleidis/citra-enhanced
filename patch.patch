@@ -1,0 +1,713 @@
+From fb86317a0ac99947108fdea54793a710b3be6475 Mon Sep 17 00:00:00 2001
+From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
+Date: Mon, 13 May 2024 16:40:08 +0200
+Subject: [PATCH] renderer_vulkan: Initial vertex-shader SPIR-V generation
+
+This is from a PR that never got merged due to citra shutdown. see https://web.archive.org/web/20240304080216/https://github.com/citra-emu/citra/pull/7474
+
+Co-Authored-By: Wunk <wunkolo@gmail.com>
+---
+ src/common/hash.h                             |  10 +
+ src/video_core/CMakeLists.txt                 |   2 +
+ .../renderer_vulkan/vk_graphics_pipeline.cpp  |   5 +
+ .../renderer_vulkan/vk_graphics_pipeline.h    |   3 +-
+ .../renderer_vulkan/vk_pipeline_cache.cpp     |  37 ++-
+ .../renderer_vulkan/vk_pipeline_cache.h       |   2 +-
+ .../renderer_vulkan/vk_shader_util.cpp        |  17 +-
+ .../renderer_vulkan/vk_shader_util.h          |  11 +
+ .../shader/generator/spv_fs_shader_gen.cpp    |   2 -
+ .../shader/generator/spv_fs_shader_gen.h      |  16 +-
+ .../shader/generator/spv_shader_gen.cpp       | 273 ++++++++++++++++++
+ .../shader/generator/spv_shader_gen.h         | 134 +++++++++
+ 12 files changed, 480 insertions(+), 32 deletions(-)
+ create mode 100644 src/video_core/shader/generator/spv_shader_gen.cpp
+ create mode 100644 src/video_core/shader/generator/spv_shader_gen.h
+
+diff --git a/src/common/hash.h b/src/common/hash.h
+index 1a222b22e..9fb21775a 100644
+--- a/src/common/hash.h
++++ b/src/common/hash.h
+@@ -6,6 +6,7 @@
+ 
+ #include <cstddef>
+ #include <cstring>
++#include <span>
+ #include "common/cityhash.h"
+ #include "common/common_types.h"
+ 
+@@ -21,6 +22,15 @@ static inline u64 ComputeHash64(const void* data, std::size_t len) noexcept {
+     return CityHash64(static_cast<const char*>(data), len);
+ }
+ 
++/**
++ * Computes a 64-bit hash over the specified block of data
++ * @param data Block of data to compute hash over
++ * @returns 64-bit hash value that was computed over the data block
++ */
++static inline u64 ComputeHash64(std::span<const std::byte> data) noexcept {
++    return ComputeHash64(data.data(), data.size());
++}
++
+ /**
+  * Computes a 64-bit hash of a struct. In addition to being trivially copyable, it is also critical
+  * that either the struct includes no padding, or that any padding is initialized to a known value
+diff --git a/src/video_core/CMakeLists.txt b/src/video_core/CMakeLists.txt
+index 3593a271a..fb59b0370 100644
+--- a/src/video_core/CMakeLists.txt
++++ b/src/video_core/CMakeLists.txt
+@@ -195,6 +195,8 @@ if (ENABLE_VULKAN)
+         renderer_vulkan/vk_texture_runtime.h
+         shader/generator/spv_fs_shader_gen.cpp
+         shader/generator/spv_fs_shader_gen.h
++        shader/generator/spv_shader_gen.h
++        shader/generator/spv_shader_gen.cpp
+     )
+     target_link_libraries(video_core PRIVATE vulkan-headers vma sirit SPIRV glslang)
+ endif()
+diff --git a/src/video_core/renderer_vulkan/vk_graphics_pipeline.cpp b/src/video_core/renderer_vulkan/vk_graphics_pipeline.cpp
+index 2de60c244..70a69d37f 100644
+--- a/src/video_core/renderer_vulkan/vk_graphics_pipeline.cpp
++++ b/src/video_core/renderer_vulkan/vk_graphics_pipeline.cpp
+@@ -56,6 +56,11 @@ Shader::Shader(const Instance& instance, vk::ShaderStageFlagBits stage, std::str
+     MarkDone();
+ }
+ 
++Shader::Shader(const Instance& instance, std::span<const u32> code) : Shader{instance} {
++    module = CompileSPV(code, instance.GetDevice());
++    MarkDone();
++}
++
+ Shader::~Shader() {
+     if (device && module) {
+         device.destroyShaderModule(module);
+diff --git a/src/video_core/renderer_vulkan/vk_graphics_pipeline.h b/src/video_core/renderer_vulkan/vk_graphics_pipeline.h
+index 57f4bc54f..4b102aa77 100644
+--- a/src/video_core/renderer_vulkan/vk_graphics_pipeline.h
++++ b/src/video_core/renderer_vulkan/vk_graphics_pipeline.h
+@@ -152,6 +152,7 @@ struct PipelineInfo {
+ struct Shader : public Common::AsyncHandle {
+     explicit Shader(const Instance& instance);
+     explicit Shader(const Instance& instance, vk::ShaderStageFlagBits stage, std::string code);
++    explicit Shader(const Instance& instance, std::span<const u32> code);
+     ~Shader();
+ 
+     [[nodiscard]] vk::ShaderModule Handle() const noexcept {
+@@ -160,7 +161,7 @@ struct Shader : public Common::AsyncHandle {
+ 
+     vk::ShaderModule module;
+     vk::Device device;
+-    std::string program;
++    std::vector<u32> program;
+ };
+ 
+ class GraphicsPipeline : public Common::AsyncHandle {
+diff --git a/src/video_core/renderer_vulkan/vk_pipeline_cache.cpp b/src/video_core/renderer_vulkan/vk_pipeline_cache.cpp
+index 60dd37eef..006d91b23 100644
+--- a/src/video_core/renderer_vulkan/vk_pipeline_cache.cpp
++++ b/src/video_core/renderer_vulkan/vk_pipeline_cache.cpp
+@@ -20,6 +20,7 @@
+ #include "video_core/shader/generator/glsl_fs_shader_gen.h"
+ #include "video_core/shader/generator/glsl_shader_gen.h"
+ #include "video_core/shader/generator/spv_fs_shader_gen.h"
++#include "video_core/shader/generator/spv_shader_gen.h"
+ 
+ using namespace Pica::Shader::Generator;
+ using Pica::Shader::FSConfig;
+@@ -86,8 +87,7 @@ PipelineCache::PipelineCache(const Instance& instance_, Scheduler& scheduler_,
+           DescriptorHeap{instance, scheduler.GetMasterSemaphore(), TEXTURE_BINDINGS<1>},
+           DescriptorHeap{instance, scheduler.GetMasterSemaphore(), UTILITY_BINDINGS, 32}},
+       trivial_vertex_shader{
+-          instance, vk::ShaderStageFlagBits::eVertex,
+-          GLSL::GenerateTrivialVertexShader(instance.IsShaderClipDistanceSupported(), true)} {
++          instance, SPIRV::GenerateTrivialVertexShader(instance.IsShaderClipDistanceSupported())} {
+     scheduler.RegisterOnDispatch([this] { update_queue.Flush(); });
+     profile = Pica::Shader::Profile{
+         .has_separable_shaders = true,
+@@ -356,21 +356,36 @@ bool PipelineCache::UseProgrammableVertexShader(const Pica::RegsInternal& regs,
+ 
+     const auto [it, new_config] = programmable_vertex_map.try_emplace(config);
+     if (new_config) {
+-        auto program = GLSL::GenerateVertexShader(setup, config, true);
+-        if (program.empty()) {
+-            LOG_ERROR(Render_Vulkan, "Failed to retrieve programmable vertex shader");
+-            programmable_vertex_map[config] = nullptr;
+-            return false;
++        const bool use_spirv = Settings::values.spirv_shader_gen.GetValue();
++        const vk::Device device = instance.GetDevice();
++
++        std::vector<u32> code;
++
++        if (use_spirv && false) {
++            // TODO: Generate vertex shader SPIRV from the given VS program
++            // code = SPIRV::GenerateVertexShader(setup, config, profile);
++        } else {
++            // Generate GLSL
++            const std::string program = GLSL::GenerateVertexShader(setup, config, true);
++            if (program.empty()) {
++                LOG_ERROR(Render_Vulkan, "Failed to retrieve programmable vertex shader");
++                programmable_vertex_map[config] = nullptr;
++                return false;
++            }
++            // Compile GLSL to SPIRV
++            code = CompileGLSLtoSPIRV(program, vk::ShaderStageFlagBits::eVertex, device);
+         }
+ 
+-        auto [iter, new_program] = programmable_vertex_cache.try_emplace(program, instance);
++        const u64 code_hash = Common::ComputeHash64(std::as_bytes(std::span(code)));
++
++        const auto [iter, new_program] = programmable_vertex_cache.try_emplace(code_hash, instance);
+         auto& shader = iter->second;
+ 
++        // Queue worker thread to create shader module
+         if (new_program) {
+-            shader.program = std::move(program);
+-            const vk::Device device = instance.GetDevice();
++            shader.program = std::move(code);
+             workers.QueueWork([device, &shader] {
+-                shader.module = Compile(shader.program, vk::ShaderStageFlagBits::eVertex, device);
++                shader.module = CompileSPV(shader.program, device);
+                 shader.MarkDone();
+             });
+         }
+diff --git a/src/video_core/renderer_vulkan/vk_pipeline_cache.h b/src/video_core/renderer_vulkan/vk_pipeline_cache.h
+index 5abb040d6..46f5c17e1 100644
+--- a/src/video_core/renderer_vulkan/vk_pipeline_cache.h
++++ b/src/video_core/renderer_vulkan/vk_pipeline_cache.h
+@@ -118,7 +118,7 @@ class PipelineCache {
+     std::array<u64, MAX_SHADER_STAGES> shader_hashes;
+     std::array<Shader*, MAX_SHADER_STAGES> current_shaders;
+     std::unordered_map<Pica::Shader::Generator::PicaVSConfig, Shader*> programmable_vertex_map;
+-    std::unordered_map<std::string, Shader> programmable_vertex_cache;
++    std::unordered_map<u64, Shader> programmable_vertex_cache;
+     std::unordered_map<Pica::Shader::Generator::PicaFixedGSConfig, Shader> fixed_geometry_shaders;
+     std::unordered_map<Pica::Shader::FSConfig, Shader> fragment_shaders;
+     Shader trivial_vertex_shader;
+diff --git a/src/video_core/renderer_vulkan/vk_shader_util.cpp b/src/video_core/renderer_vulkan/vk_shader_util.cpp
+index 09e3eb883..6f7e64025 100644
+--- a/src/video_core/renderer_vulkan/vk_shader_util.cpp
++++ b/src/video_core/renderer_vulkan/vk_shader_util.cpp
+@@ -158,8 +158,14 @@ bool InitializeCompiler() {
+ }
+ } // Anonymous namespace
+ 
+-vk::ShaderModule Compile(std::string_view code, vk::ShaderStageFlagBits stage, vk::Device device,
+-                         std::string_view premable) {
++/**
++ * @brief Compiles GLSL into SPIRV
++ * @param code The string containing GLSL code.
++ * @param stage The pipeline stage the shader will be used in.
++ * @param device The vulkan device handle.
++ */
++std::vector<u32> CompileGLSLtoSPIRV(std::string_view code, vk::ShaderStageFlagBits stage,
++                                    vk::Device device, std::string_view premable) {
+     if (!InitializeCompiler()) {
+         return {};
+     }
+@@ -215,7 +221,12 @@ vk::ShaderModule Compile(std::string_view code, vk::ShaderStageFlagBits stage, v
+         LOG_INFO(Render_Vulkan, "SPIR-V conversion messages: {}", spv_messages);
+     }
+ 
+-    return CompileSPV(out_code, device);
++    return out_code;
++}
++
++vk::ShaderModule Compile(std::string_view code, vk::ShaderStageFlagBits stage, vk::Device device,
++                         std::string_view premable) {
++    return CompileSPV(CompileGLSLtoSPIRV(code, stage, device, premable), device);
+ }
+ 
+ vk::ShaderModule CompileSPV(std::span<const u32> code, vk::Device device) {
+diff --git a/src/video_core/renderer_vulkan/vk_shader_util.h b/src/video_core/renderer_vulkan/vk_shader_util.h
+index cb91aedf8..4e6e99434 100644
+--- a/src/video_core/renderer_vulkan/vk_shader_util.h
++++ b/src/video_core/renderer_vulkan/vk_shader_util.h
+@@ -10,11 +10,22 @@
+ 
+ namespace Vulkan {
+ 
++/**
++ * @brief Compiles GLSL into SPIRV
++ * @param code The string containing GLSL code.
++ * @param stage The pipeline stage the shader will be used in.
++ * @param device The vulkan device handle.
++ * @param premable Code that occurs before the main code block
++ */
++std::vector<u32> CompileGLSLtoSPIRV(std::string_view code, vk::ShaderStageFlagBits stage,
++                                    vk::Device device, std::string_view premable = "");
++
+ /**
+  * @brief Creates a vulkan shader module from GLSL by converting it to SPIR-V using glslang.
+  * @param code The string containing GLSL code.
+  * @param stage The pipeline stage the shader will be used in.
+  * @param device The vulkan device handle.
++ * @param premable Code that occurs before the main code block
+  */
+ vk::ShaderModule Compile(std::string_view code, vk::ShaderStageFlagBits stage, vk::Device device,
+                          std::string_view premable = "");
+diff --git a/src/video_core/shader/generator/spv_fs_shader_gen.cpp b/src/video_core/shader/generator/spv_fs_shader_gen.cpp
+index 5f3158a73..03bf7f49f 100644
+--- a/src/video_core/shader/generator/spv_fs_shader_gen.cpp
++++ b/src/video_core/shader/generator/spv_fs_shader_gen.cpp
+@@ -15,8 +15,6 @@ using Pica::TexturingRegs;
+ using TevStageConfig = TexturingRegs::TevStageConfig;
+ using TextureType = TexturingRegs::TextureConfig::TextureType;
+ 
+-constexpr u32 SPIRV_VERSION_1_3 = 0x00010300;
+-
+ FragmentModule::FragmentModule(const FSConfig& config_, const Profile& profile_)
+     : Sirit::Module{SPIRV_VERSION_1_3}, config{config_}, profile{profile_},
+       use_fragment_shader_barycentric{profile.has_fragment_shader_barycentric &&
+diff --git a/src/video_core/shader/generator/spv_fs_shader_gen.h b/src/video_core/shader/generator/spv_fs_shader_gen.h
+index cbbede01f..ae86e8565 100644
+--- a/src/video_core/shader/generator/spv_fs_shader_gen.h
++++ b/src/video_core/shader/generator/spv_fs_shader_gen.h
+@@ -7,27 +7,15 @@
+ #include <array>
+ #include <sirit/sirit.h>
+ 
++#include "common/common_types.h"
++#include "spv_shader_gen.h"
+ #include "video_core/pica/regs_framebuffer.h"
+ #include "video_core/pica/regs_texturing.h"
+ 
+-namespace Pica::Shader {
+-struct FSConfig;
+-struct Profile;
+-} // namespace Pica::Shader
+-
+ namespace Pica::Shader::Generator::SPIRV {
+ 
+ using Sirit::Id;
+ 
+-struct VectorIds {
+-    /// Returns the type id of the vector with the provided size
+-    [[nodiscard]] constexpr Id Get(u32 size) const {
+-        return ids[size - 2];
+-    }
+-
+-    std::array<Id, 3> ids;
+-};
+-
+ class FragmentModule : public Sirit::Module {
+     static constexpr u32 NUM_TEV_STAGES = 6;
+     static constexpr u32 NUM_LIGHTS = 8;
+diff --git a/src/video_core/shader/generator/spv_shader_gen.cpp b/src/video_core/shader/generator/spv_shader_gen.cpp
+new file mode 100644
+index 000000000..54f2f53e9
+--- /dev/null
++++ b/src/video_core/shader/generator/spv_shader_gen.cpp
+@@ -0,0 +1,273 @@
++// Copyright 2024 Citra Emulator Project
++// Licensed under GPLv2 or any later version
++// Refer to the license.txt file included.
++
++#include "video_core/pica/regs_rasterizer.h"
++#include "video_core/shader/generator/shader_gen.h"
++#include "video_core/shader/generator/spv_shader_gen.h"
++
++using VSOutputAttributes = Pica::RasterizerRegs::VSOutputAttributes;
++
++namespace Pica::Shader::Generator::SPIRV {
++
++VertexModule::VertexModule() : Sirit::Module{SPIRV_VERSION_1_3} {
++    DefineArithmeticTypes();
++    DefineInterface();
++
++    ids.sanitize_vertex = WriteFuncSanitizeVertex();
++
++    DefineEntryPoint();
++}
++
++VertexModule::~VertexModule() = default;
++
++void VertexModule::DefineArithmeticTypes() {
++    ids.void_ = Name(TypeVoid(), "void_id");
++    ids.bool_ = Name(TypeBool(), "bool_id");
++    ids.f32 = Name(TypeFloat(32), "f32_id");
++    ids.i32 = Name(TypeSInt(32), "i32_id");
++    ids.u32 = Name(TypeUInt(32), "u32_id");
++
++    for (u32 size = 2; size <= 4; size++) {
++        const u32 i = size - 2;
++        ids.bvec.ids[i] = Name(TypeVector(ids.bool_, size), fmt::format("bvec{}_id", size));
++        ids.vec.ids[i] = Name(TypeVector(ids.f32, size), fmt::format("vec{}_id", size));
++        ids.ivec.ids[i] = Name(TypeVector(ids.i32, size), fmt::format("ivec{}_id", size));
++        ids.uvec.ids[i] = Name(TypeVector(ids.u32, size), fmt::format("uvec{}_id", size));
++    }
++}
++
++void VertexModule::DefineEntryPoint() {
++    AddCapability(spv::Capability::Shader);
++    SetMemoryModel(spv::AddressingModel::Logical, spv::MemoryModel::GLSL450);
++
++    const Id main_type{TypeFunction(TypeVoid())};
++    const Id main_func{OpFunction(TypeVoid(), spv::FunctionControlMask::MaskNone, main_type)};
++
++    const Id interface_ids[] = {
++        // Inputs
++        ids.vert_in_position,
++        ids.vert_in_color,
++        ids.vert_in_texcoord0,
++        ids.vert_in_texcoord1,
++        ids.vert_in_texcoord2,
++        ids.vert_in_texcoord0_w,
++        ids.vert_in_normquat,
++        ids.vert_in_view,
++        // Outputs
++        ids.gl_position,
++        ids.gl_clip_distance,
++        ids.vert_out_color,
++        ids.vert_out_texcoord0,
++        ids.vert_out_texcoord1,
++        ids.vert_out_texcoord2,
++        ids.vert_out_texcoord0_w,
++        ids.vert_out_normquat,
++        ids.vert_out_view,
++    };
++
++    AddEntryPoint(spv::ExecutionModel::Vertex, main_func, "main", interface_ids);
++}
++
++void VertexModule::DefineInterface() {
++    // Define interface block
++
++    /// Inputs
++    ids.vert_in_position =
++        Name(DefineInput(ids.vec.Get(4), ATTRIBUTE_POSITION), "vert_in_position");
++    ids.vert_in_color = Name(DefineInput(ids.vec.Get(4), ATTRIBUTE_COLOR), "vert_in_color");
++    ids.vert_in_texcoord0 =
++        Name(DefineInput(ids.vec.Get(2), ATTRIBUTE_TEXCOORD0), "vert_in_texcoord0");
++    ids.vert_in_texcoord1 =
++        Name(DefineInput(ids.vec.Get(2), ATTRIBUTE_TEXCOORD1), "vert_in_texcoord1");
++    ids.vert_in_texcoord2 =
++        Name(DefineInput(ids.vec.Get(2), ATTRIBUTE_TEXCOORD2), "vert_in_texcoord2");
++    ids.vert_in_texcoord0_w =
++        Name(DefineInput(ids.f32, ATTRIBUTE_TEXCOORD0_W), "vert_in_texcoord0_w");
++    ids.vert_in_normquat =
++        Name(DefineInput(ids.vec.Get(4), ATTRIBUTE_NORMQUAT), "vert_in_normquat");
++    ids.vert_in_view = Name(DefineInput(ids.vec.Get(3), ATTRIBUTE_VIEW), "vert_in_view");
++
++    /// Outputs
++    ids.vert_out_color = Name(DefineOutput(ids.vec.Get(4), ATTRIBUTE_COLOR), "vert_out_color");
++    ids.vert_out_texcoord0 =
++        Name(DefineOutput(ids.vec.Get(2), ATTRIBUTE_TEXCOORD0), "vert_out_texcoord0");
++    ids.vert_out_texcoord1 =
++        Name(DefineOutput(ids.vec.Get(2), ATTRIBUTE_TEXCOORD1), "vert_out_texcoord1");
++    ids.vert_out_texcoord2 =
++        Name(DefineOutput(ids.vec.Get(2), ATTRIBUTE_TEXCOORD2), "vert_out_texcoord2");
++    ids.vert_out_texcoord0_w =
++        Name(DefineOutput(ids.f32, ATTRIBUTE_TEXCOORD0_W), "vert_out_texcoord0_w");
++    ids.vert_out_normquat =
++        Name(DefineOutput(ids.vec.Get(4), ATTRIBUTE_NORMQUAT), "vert_out_normquat");
++    ids.vert_out_view = Name(DefineOutput(ids.vec.Get(3), ATTRIBUTE_VIEW), "vert_out_view");
++
++    /// Uniforms
++
++    // vs_data
++    const Id type_vs_data = Name(TypeStruct(ids.u32, ids.vec.Get(4)), "vs_data");
++    Decorate(type_vs_data, spv::Decoration::Block);
++
++    ids.ptr_vs_data = AddGlobalVariable(TypePointer(spv::StorageClass::Uniform, type_vs_data),
++                                        spv::StorageClass::Uniform);
++
++    Decorate(ids.ptr_vs_data, spv::Decoration::DescriptorSet, 0);
++    Decorate(ids.ptr_vs_data, spv::Decoration::Binding, 1);
++
++    MemberName(type_vs_data, 0, "enable_clip1");
++    MemberName(type_vs_data, 1, "clip_coef");
++
++    MemberDecorate(type_vs_data, 0, spv::Decoration::Offset, 0);
++    MemberDecorate(type_vs_data, 1, spv::Decoration::Offset, 16);
++
++    /// Built-ins
++    ids.gl_position = DefineVar(ids.vec.Get(4), spv::StorageClass::Output);
++    Decorate(ids.gl_position, spv::Decoration::BuiltIn, spv::BuiltIn::Position);
++
++    ids.gl_clip_distance =
++        DefineVar(TypeArray(ids.f32, Constant(ids.u32, 2)), spv::StorageClass::Output);
++    Decorate(ids.gl_clip_distance, spv::Decoration::BuiltIn, spv::BuiltIn::ClipDistance);
++}
++
++Id VertexModule::WriteFuncSanitizeVertex() {
++    const Id func_type = TypeFunction(ids.vec.Get(4), ids.vec.Get(4));
++    const Id func = Name(OpFunction(ids.vec.Get(4), spv::FunctionControlMask::MaskNone, func_type),
++                         "SanitizeVertex");
++    const Id arg_pos = OpFunctionParameter(ids.vec.Get(4));
++
++    AddLabel(OpLabel());
++
++    const Id result = AddLocalVariable(TypePointer(spv::StorageClass::Function, ids.vec.Get(4)),
++                                       spv::StorageClass::Function);
++    OpStore(result, arg_pos);
++
++    const Id pos_z = OpCompositeExtract(ids.f32, arg_pos, 2);
++    const Id pos_w = OpCompositeExtract(ids.f32, arg_pos, 3);
++
++    const Id ndc_z = OpFDiv(ids.f32, pos_z, pos_w);
++
++    // if (ndc_z > 0.f && ndc_z < 0.000001f)
++    const Id test_1 =
++        OpLogicalAnd(ids.bool_, OpFOrdGreaterThan(ids.bool_, ndc_z, Constant(ids.f32, 0.0f)),
++                     OpFOrdLessThan(ids.bool_, ndc_z, Constant(ids.f32, 0.000001f)));
++
++    {
++        const Id true_label = OpLabel();
++        const Id end_label = OpLabel();
++
++        OpSelectionMerge(end_label, spv::SelectionControlMask::MaskNone);
++        OpBranchConditional(test_1, true_label, end_label);
++        AddLabel(true_label);
++
++        // .z = 0.0f;
++        OpStore(result, OpCompositeInsert(ids.vec.Get(4), ConstantNull(ids.f32), arg_pos, 2));
++
++        OpBranch(end_label);
++        AddLabel(end_label);
++    }
++
++    // if (ndc_z < -1.f && ndc_z > -1.00001f)
++    const Id test_2 =
++        OpLogicalAnd(ids.bool_, OpFOrdLessThan(ids.bool_, ndc_z, Constant(ids.f32, -1.0f)),
++                     OpFOrdGreaterThan(ids.bool_, ndc_z, Constant(ids.f32, -1.00001f)));
++    {
++        const Id true_label = OpLabel();
++        const Id end_label = OpLabel();
++
++        OpSelectionMerge(end_label, spv::SelectionControlMask::MaskNone);
++        OpBranchConditional(test_2, true_label, end_label);
++        AddLabel(true_label);
++
++        // .z = -.w;
++        const Id neg_w = OpFNegate(ids.f32, OpCompositeExtract(ids.f32, arg_pos, 3));
++        OpStore(result, OpCompositeInsert(ids.vec.Get(4), neg_w, arg_pos, 2));
++
++        OpBranch(end_label);
++        AddLabel(end_label);
++    }
++
++    OpReturnValue(OpLoad(ids.vec.Get(4), result));
++    OpFunctionEnd();
++    return func;
++}
++
++void VertexModule::Generate(Common::UniqueFunction<void, Sirit::Module&, const ModuleIds&> proc) {
++    AddLabel(OpLabel());
++
++    ids.ptr_enable_clip1 = OpAccessChain(TypePointer(spv::StorageClass::Uniform, ids.u32),
++                                         ids.ptr_vs_data, Constant(ids.u32, 0));
++
++    ids.ptr_clip_coef = OpAccessChain(TypePointer(spv::StorageClass::Uniform, ids.vec.Get(4)),
++                                      ids.ptr_vs_data, Constant(ids.u32, 1));
++
++    proc(*this, ids);
++    OpReturn();
++    OpFunctionEnd();
++}
++
++std::vector<u32> GenerateTrivialVertexShader(bool use_clip_planes) {
++    VertexModule module;
++    module.Generate([use_clip_planes](Sirit::Module& spv,
++                                      const VertexModule::ModuleIds& ids) -> void {
++        const Id pos_sanitized = spv.OpFunctionCall(
++            ids.vec.Get(4), ids.sanitize_vertex, spv.OpLoad(ids.vec.Get(4), ids.vert_in_position));
++
++        // Negate Z
++        const Id neg_z = spv.OpFNegate(ids.f32, spv.OpCompositeExtract(ids.f32, pos_sanitized, 2));
++        const Id negated_z = spv.OpCompositeInsert(ids.vec.Get(4), neg_z, pos_sanitized, 2);
++
++        spv.OpStore(ids.gl_position, negated_z);
++
++        // Pass-through
++        spv.OpStore(ids.vert_out_color, spv.OpLoad(ids.vec.Get(4), ids.vert_in_color));
++        spv.OpStore(ids.vert_out_texcoord0, spv.OpLoad(ids.vec.Get(2), ids.vert_in_texcoord0));
++        spv.OpStore(ids.vert_out_texcoord1, spv.OpLoad(ids.vec.Get(2), ids.vert_in_texcoord1));
++        spv.OpStore(ids.vert_out_texcoord2, spv.OpLoad(ids.vec.Get(2), ids.vert_in_texcoord2));
++        spv.OpStore(ids.vert_out_texcoord0_w, spv.OpLoad(ids.f32, ids.vert_in_texcoord0_w));
++        spv.OpStore(ids.vert_out_normquat, spv.OpLoad(ids.vec.Get(4), ids.vert_in_normquat));
++        spv.OpStore(ids.vert_out_view, spv.OpLoad(ids.vec.Get(3), ids.vert_in_view));
++
++        if (use_clip_planes) {
++            spv.OpStore(spv.OpAccessChain(spv.TypePointer(spv::StorageClass::Output, ids.f32),
++                                          ids.gl_clip_distance, spv.Constant(ids.u32, 0)),
++                        neg_z);
++
++            const Id enable_clip1 = spv.OpINotEqual(
++                ids.bool_, spv.OpLoad(ids.u32, ids.ptr_enable_clip1), spv.Constant(ids.u32, 0));
++
++            {
++                const Id true_label = spv.OpLabel();
++                const Id false_label = spv.OpLabel();
++                const Id end_label = spv.OpLabel();
++
++                spv.OpSelectionMerge(end_label, spv::SelectionControlMask::MaskNone);
++                spv.OpBranchConditional(enable_clip1, true_label, false_label);
++                {
++                    spv.AddLabel(true_label);
++
++                    spv.OpStore(
++                        spv.OpAccessChain(spv.TypePointer(spv::StorageClass::Output, ids.f32),
++                                          ids.gl_clip_distance, spv.Constant(ids.u32, 1)),
++                        spv.OpDot(ids.f32, spv.OpLoad(ids.vec.Get(4), ids.ptr_clip_coef),
++                                  pos_sanitized));
++
++                    spv.OpBranch(end_label);
++                }
++                {
++                    spv.AddLabel(false_label);
++
++                    spv.OpStore(
++                        spv.OpAccessChain(spv.TypePointer(spv::StorageClass::Output, ids.f32),
++                                          ids.gl_clip_distance, spv.Constant(ids.u32, 1)),
++                        spv.ConstantNull(ids.f32));
++
++                    spv.OpBranch(end_label);
++                }
++                spv.AddLabel(end_label);
++            }
++        }
++    });
++    return module.Assemble();
++}
++
++} // namespace Pica::Shader::Generator::SPIRV
+\ No newline at end of file
+diff --git a/src/video_core/shader/generator/spv_shader_gen.h b/src/video_core/shader/generator/spv_shader_gen.h
+new file mode 100644
+index 000000000..4f52d52d0
+--- /dev/null
++++ b/src/video_core/shader/generator/spv_shader_gen.h
+@@ -0,0 +1,134 @@
++// Copyright 2024 Citra Emulator Project
++// Licensed under GPLv2 or any later version
++// Refer to the license.txt file included.
++
++#pragma once
++
++#include <sirit/sirit.h>
++
++#include "common/common_types.h"
++#include "common/unique_function.h"
++
++namespace Pica {
++struct ShaderSetup;
++}
++
++namespace Pica::Shader {
++struct VSConfig;
++struct FSConfig;
++struct Profile;
++} // namespace Pica::Shader
++
++namespace Pica::Shader::Generator {
++struct PicaVSConfig;
++} // namespace Pica::Shader::Generator
++
++namespace Pica::Shader::Generator::SPIRV {
++
++using Sirit::Id;
++
++constexpr u32 SPIRV_VERSION_1_3 = 0x00010300;
++
++struct VectorIds {
++    /// Returns the type id of the vector with the provided size
++    [[nodiscard]] constexpr Id Get(u32 size) const {
++        return ids[size - 2];
++    }
++
++    std::array<Id, 3> ids;
++};
++
++class VertexModule : public Sirit::Module {
++
++public:
++    explicit VertexModule();
++    ~VertexModule();
++
++private:
++    template <bool global = true>
++    [[nodiscard]] Id DefineVar(Id type, spv::StorageClass storage_class) {
++        const Id pointer_type_id{TypePointer(storage_class, type)};
++        return global ? AddGlobalVariable(pointer_type_id, storage_class)
++                      : AddLocalVariable(pointer_type_id, storage_class);
++    }
++
++    /// Defines an input variable
++    [[nodiscard]] Id DefineInput(Id type, u32 location) {
++        const Id input_id{DefineVar(type, spv::StorageClass::Input)};
++        Decorate(input_id, spv::Decoration::Location, location);
++        return input_id;
++    }
++
++    /// Defines an output variable
++    [[nodiscard]] Id DefineOutput(Id type, u32 location) {
++        const Id output_id{DefineVar(type, spv::StorageClass::Output)};
++        Decorate(output_id, spv::Decoration::Location, location);
++        return output_id;
++    }
++
++    void DefineArithmeticTypes();
++    void DefineEntryPoint();
++    void DefineInterface();
++
++    [[nodiscard]] Id WriteFuncSanitizeVertex();
++
++public:
++    struct ModuleIds {
++        /// Types
++        Id void_{};
++        Id bool_{};
++        Id f32{};
++        Id i32{};
++        Id u32{};
++
++        VectorIds vec{};
++        VectorIds ivec{};
++        VectorIds uvec{};
++        VectorIds bvec{};
++
++        /// Input vertex attributes
++        Id vert_in_position{};
++        Id vert_in_color{};
++        Id vert_in_texcoord0{};
++        Id vert_in_texcoord1{};
++        Id vert_in_texcoord2{};
++        Id vert_in_texcoord0_w{};
++        Id vert_in_normquat{};
++        Id vert_in_view{};
++
++        /// Output vertex attributes
++        Id vert_out_color{};
++        Id vert_out_texcoord0{};
++        Id vert_out_texcoord1{};
++        Id vert_out_texcoord2{};
++        Id vert_out_texcoord0_w{};
++        Id vert_out_normquat{};
++        Id vert_out_view{};
++
++        /// Uniforms
++
++        // vs_data
++        Id ptr_vs_data;
++        Id ptr_enable_clip1;
++        Id ptr_clip_coef;
++
++        /// Built-ins
++        Id gl_position;
++        Id gl_clip_distance;
++
++        /// Functions
++        Id sanitize_vertex;
++    } ids;
++
++    /// Generate code using the provided SPIRV emitter context
++    void Generate(Common::UniqueFunction<void, Sirit::Module&, const ModuleIds&> proc);
++};
++
++/**
++ * Generates the SPIRV vertex shader program source code that accepts vertices from software shader
++ * and directly passes them to the fragment shader.
++ * @returns SPIRV shader assembly; empty on failure
++ */
++std::vector<u32> GenerateTrivialVertexShader(bool use_clip_planes);
++
++} // namespace Pica::Shader::Generator::SPIRV
