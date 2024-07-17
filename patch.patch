@@ -1,22 +1,38 @@
-From 85d6664630fa26d95267385daebc64d32eeee7a5 Mon Sep 17 00:00:00 2001
+From 6336212824145b6029f27ac2e1c90e3d090f9675 Mon Sep 17 00:00:00 2001
 From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
-Date: Tue, 30 Apr 2024 23:46:22 +0200
-Subject: [PATCH] Fix swap screens hotkey not working correctly
+Date: Sat, 11 May 2024 21:44:17 +0200
+Subject: [PATCH] Fix again
 
 ---
- .../src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt   | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/citra_qt/util/mica.cpp | 2 +-
+ src/citra_qt/util/mica.h   | 7 +++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
-index 3ef242730..73d18145e 100644
---- a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
-+++ b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
-@@ -83,7 +83,7 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) : SurfaceView(contex
+diff --git a/src/citra_qt/util/mica.cpp b/src/citra_qt/util/mica.cpp
+index 50305a8f4..6a7a2ccc3 100644
+--- a/src/citra_qt/util/mica.cpp
++++ b/src/citra_qt/util/mica.cpp
+@@ -17,6 +17,6 @@ void EnableDarkMicaForWindow(HWND hwnd) {
+     DwmSetWindowAttribute(hwnd, attribute, &attributeValue, sizeof(attributeValue));
+ }
  
-     private fun swapScreens() {
-         val isSwapScreensEnabled = !EmulationMenuSettings.swapScreens
--        EmulationMenuSettings.swapScreens = isEnabled
-+        EmulationMenuSettings.swapScreens = isSwapScreensEnabled
-         NativeLibrary.swapScreens(
-             isSwapScreensEnabled,
-             (context as Activity).windowManager.defaultDisplay.rotation
+-} // namespace mica
++} // namespace Utils
+ 
+ #endif
+diff --git a/src/citra_qt/util/mica.h b/src/citra_qt/util/mica.h
+index 59acaf837..43e464c6e 100644
+--- a/src/citra_qt/util/mica.h
++++ b/src/citra_qt/util/mica.h
+@@ -4,6 +4,9 @@
+ #include <windows.h>
+ 
+ namespace Utils {
+-    void EnableDarkMicaForWindow(HWND hwnd);
+-}
++
++void EnableDarkMicaForWindow(HWND hwnd);
++
++} // namespace Utils
++
+ #endif
