@@ -1,185 +1,22 @@
-From 959a66d839007b4d1b60fa7a9a3a768adf0c0f3d Mon Sep 17 00:00:00 2001
-From: PabloMK7 <hackyglitch2@gmail.com>
-Date: Tue, 16 Jul 2024 23:54:02 +0200
-Subject: [PATCH] renderer_vulkan: Address vulkan surface recreation issues
- (#198)
+From 85d6664630fa26d95267385daebc64d32eeee7a5 Mon Sep 17 00:00:00 2001
+From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
+Date: Tue, 30 Apr 2024 23:46:22 +0200
+Subject: [PATCH] Fix swap screens hotkey not working correctly
 
 ---
- src/android/app/build.gradle.kts               |  2 +-
- .../citra_emu/activities/EmulationActivity.kt  | 15 ---------------
- .../citra/citra_emu/ui/main/MainActivity.kt    |  4 ----
- .../app/src/main/jni/emu_window/emu_window.cpp |  8 ++++++--
- .../app/src/main/jni/emu_window/emu_window.h   |  2 +-
- src/android/app/src/main/jni/native.cpp        |  5 +++--
- .../gradle/wrapper/gradle-wrapper.properties   |  2 +-
- .../renderer_vulkan/vk_present_window.cpp      |  2 +-
- 9 files changed, 24 insertions(+), 34 deletions(-)
+ .../src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/android/app/build.gradle.kts b/src/android/app/build.gradle.kts
-index b1289ec3d..9ffd5055d 100644
---- a/src/android/app/build.gradle.kts
-+++ b/src/android/app/build.gradle.kts
-@@ -29,7 +29,7 @@ android {
-     namespace = "org.citra.citra_emu"
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
+index 3ef242730..73d18145e 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/overlay/InputOverlay.kt
+@@ -83,7 +83,7 @@ class InputOverlay(context: Context?, attrs: AttributeSet?) : SurfaceView(contex
  
-     compileSdkVersion = "android-34"
--    ndkVersion = "26.1.10909125"
-+    ndkVersion = "26.3.11579264"
- 
-     compileOptions {
-         sourceCompatibility = JavaVersion.VERSION_17
-diff --git a/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt b/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
-index c22547f81..4681bd319 100644
---- a/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
-+++ b/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
-@@ -38,7 +38,6 @@ import org.citra.citra_emu.features.settings.model.view.InputBindingSetting
- import org.citra.citra_emu.fragments.MessageDialogFragment
- import org.citra.citra_emu.utils.ControllerMappingHelper
- import org.citra.citra_emu.utils.FileBrowserHelper
--import org.citra.citra_emu.utils.ForegroundService
- import org.citra.citra_emu.utils.EmulationLifecycleUtil
- import org.citra.citra_emu.utils.EmulationMenuSettings
- import org.citra.citra_emu.utils.ThemeUtil
-@@ -47,7 +46,6 @@ import org.citra.citra_emu.viewmodel.EmulationViewModel
- class EmulationActivity : AppCompatActivity() {
-     private val preferences: SharedPreferences
-         get() = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
--    private var foregroundService: Intent? = null
-     var isActivityRecreated = false
- 
-     private val settingsViewModel: SettingsViewModel by viewModels()
-@@ -85,10 +83,6 @@ class EmulationActivity : AppCompatActivity() {
-             windowManager.defaultDisplay.rotation
-         )
- 
--        // Start a foreground service to prevent the app from getting killed in the background
--        foregroundService = Intent(this, ForegroundService::class.java)
--        startForegroundService(foregroundService)
--
-         EmulationLifecycleUtil.addShutdownHook(hook = { this.finish() })
-     }
- 
-@@ -112,7 +106,6 @@ class EmulationActivity : AppCompatActivity() {
- 
-     override fun onDestroy() {
-         EmulationLifecycleUtil.clear()
--        stopForegroundService(this)
-         super.onDestroy()
-     }
- 
-@@ -452,12 +445,4 @@ class EmulationActivity : AppCompatActivity() {
- 
-             OnFilePickerResult(result.toString())
-         }
--
--    companion object {
--        fun stopForegroundService(activity: Activity) {
--            val startIntent = Intent(activity, ForegroundService::class.java)
--            startIntent.action = ForegroundService.ACTION_STOP
--            activity.startForegroundService(startIntent)
--        }
--    }
- }
-diff --git a/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt b/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt
-index c2aa87de4..3e9b48f7c 100644
---- a/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt
-+++ b/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt
-@@ -156,9 +156,6 @@ class MainActivity : AppCompatActivity(), ThemeProvider {
-             }
-         }
- 
--        // Dismiss previous notifications (should not happen unless a crash occurred)
--        EmulationActivity.stopForegroundService(this)
--
-         setInsets()
-     }
- 
-@@ -170,7 +167,6 @@ class MainActivity : AppCompatActivity(), ThemeProvider {
-     }
- 
-     override fun onDestroy() {
--        EmulationActivity.stopForegroundService(this)
-         super.onDestroy()
-     }
- 
-diff --git a/src/android/app/src/main/jni/emu_window/emu_window.cpp b/src/android/app/src/main/jni/emu_window/emu_window.cpp
-index 436442acd..8e1c40cd7 100644
---- a/src/android/app/src/main/jni/emu_window/emu_window.cpp
-+++ b/src/android/app/src/main/jni/emu_window/emu_window.cpp
-@@ -27,14 +27,18 @@ static void UpdateLandscapeScreenLayout() {
-             IDCache::GetNativeLibraryClass(), IDCache::GetLandscapeScreenLayout()));
- }
- 
--void EmuWindow_Android::OnSurfaceChanged(ANativeWindow* surface) {
--    render_window = surface;
-+bool EmuWindow_Android::OnSurfaceChanged(ANativeWindow* surface) {
-+    if (render_window == surface) {
-+        return false;
-+    }
- 
-+    render_window = surface;
-     window_info.type = Frontend::WindowSystemType::Android;
-     window_info.render_surface = surface;
- 
-     StopPresenting();
-     OnFramebufferSizeChanged();
-+    return true;
- }
- 
- bool EmuWindow_Android::OnTouchEvent(int x, int y, bool pressed) {
-diff --git a/src/android/app/src/main/jni/emu_window/emu_window.h b/src/android/app/src/main/jni/emu_window/emu_window.h
-index 64ead5c7f..4266fd1bb 100644
---- a/src/android/app/src/main/jni/emu_window/emu_window.h
-+++ b/src/android/app/src/main/jni/emu_window/emu_window.h
-@@ -17,7 +17,7 @@ class EmuWindow_Android : public Frontend::EmuWindow {
-     ~EmuWindow_Android();
- 
-     /// Called by the onSurfaceChanges() method to change the surface
--    void OnSurfaceChanged(ANativeWindow* surface);
-+    bool OnSurfaceChanged(ANativeWindow* surface);
- 
-     /// Handles touch event that occur.(Touched or released)
-     bool OnTouchEvent(int x, int y, bool pressed);
-diff --git a/src/android/app/src/main/jni/native.cpp b/src/android/app/src/main/jni/native.cpp
-index d84562e1a..393ce906d 100644
---- a/src/android/app/src/main/jni/native.cpp
-+++ b/src/android/app/src/main/jni/native.cpp
-@@ -294,12 +294,13 @@ void Java_org_citra_citra_1emu_NativeLibrary_surfaceChanged(JNIEnv* env,
-                                                             jobject surf) {
-     s_surf = ANativeWindow_fromSurface(env, surf);
- 
-+    bool notify = false;
-     if (window) {
--        window->OnSurfaceChanged(s_surf);
-+        notify = window->OnSurfaceChanged(s_surf);
-     }
- 
-     auto& system = Core::System::GetInstance();
--    if (system.IsPoweredOn()) {
-+    if (notify && system.IsPoweredOn()) {
-         system.GPU().Renderer().NotifySurfaceChanged();
-     }
- 
-diff --git a/src/android/gradle/wrapper/gradle-wrapper.properties b/src/android/gradle/wrapper/gradle-wrapper.properties
-index 10cba3572..03ef85ab3 100644
---- a/src/android/gradle/wrapper/gradle-wrapper.properties
-+++ b/src/android/gradle/wrapper/gradle-wrapper.properties
-@@ -3,4 +3,4 @@ distributionBase=GRADLE_USER_HOME
- distributionPath=wrapper/dists
- zipStoreBase=GRADLE_USER_HOME
- zipStorePath=wrapper/dists
--distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
-+distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
-diff --git a/src/video_core/renderer_vulkan/vk_present_window.cpp b/src/video_core/renderer_vulkan/vk_present_window.cpp
-index ef879776a..62178c690 100644
---- a/src/video_core/renderer_vulkan/vk_present_window.cpp
-+++ b/src/video_core/renderer_vulkan/vk_present_window.cpp
-@@ -473,7 +473,7 @@ void PresentWindow::CopyToSwapchain(Frame* frame) {
-         .pSignalSemaphores = &present_ready,
-     };
- 
--    std::scoped_lock submit_lock{scheduler.submit_mutex};
-+    std::scoped_lock submit_lock{scheduler.submit_mutex, recreate_surface_mutex};
- 
-     try {
-         graphics_queue.submit(submit_info, frame->present_done);
+     private fun swapScreens() {
+         val isSwapScreensEnabled = !EmulationMenuSettings.swapScreens
+-        EmulationMenuSettings.swapScreens = isEnabled
++        EmulationMenuSettings.swapScreens = isSwapScreensEnabled
+         NativeLibrary.swapScreens(
+             isSwapScreensEnabled,
+             (context as Activity).windowManager.defaultDisplay.rotation
