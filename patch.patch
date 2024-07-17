@@ -1,103 +1,185 @@
-From a5e13610e86123a2259cefa60941fe068604f8fd Mon Sep 17 00:00:00 2001
-From: Gamer64 <76565986+Gamer64ytb@users.noreply.github.com>
-Date: Wed, 17 Jul 2024 03:06:23 +0200
-Subject: [PATCH] Android: Nuke some unused images
+From 959a66d839007b4d1b60fa7a9a3a768adf0c0f3d Mon Sep 17 00:00:00 2001
+From: PabloMK7 <hackyglitch2@gmail.com>
+Date: Tue, 16 Jul 2024 23:54:02 +0200
+Subject: [PATCH] renderer_vulkan: Address vulkan surface recreation issues
+ (#198)
 
 ---
- .../app/src/main/res/drawable/gamelist_divider.xml    | 11 -----------
- src/android/app/src/main/res/drawable/ic_folder.xml   |  9 ---------
- src/android/app/src/main/res/drawable/ic_heart.xml    |  9 ---------
- src/android/app/src/main/res/drawable/ic_pause.xml    |  9 ---------
- .../app/src/main/res/drawable/popup_background.xml    |  4 ----
- .../app/src/main/res/drawable/selector_settings.xml   |  5 -----
- 6 files changed, 47 deletions(-)
- delete mode 100644 src/android/app/src/main/res/drawable/gamelist_divider.xml
- delete mode 100644 src/android/app/src/main/res/drawable/ic_folder.xml
- delete mode 100644 src/android/app/src/main/res/drawable/ic_heart.xml
- delete mode 100644 src/android/app/src/main/res/drawable/ic_pause.xml
- delete mode 100644 src/android/app/src/main/res/drawable/popup_background.xml
- delete mode 100644 src/android/app/src/main/res/drawable/selector_settings.xml
+ src/android/app/build.gradle.kts               |  2 +-
+ .../citra_emu/activities/EmulationActivity.kt  | 15 ---------------
+ .../citra/citra_emu/ui/main/MainActivity.kt    |  4 ----
+ .../app/src/main/jni/emu_window/emu_window.cpp |  8 ++++++--
+ .../app/src/main/jni/emu_window/emu_window.h   |  2 +-
+ src/android/app/src/main/jni/native.cpp        |  5 +++--
+ .../gradle/wrapper/gradle-wrapper.properties   |  2 +-
+ .../renderer_vulkan/vk_present_window.cpp      |  2 +-
+ 9 files changed, 24 insertions(+), 34 deletions(-)
 
-diff --git a/src/android/app/src/main/res/drawable/gamelist_divider.xml b/src/android/app/src/main/res/drawable/gamelist_divider.xml
-deleted file mode 100644
-index a1cec8e41..000000000
---- a/src/android/app/src/main/res/drawable/gamelist_divider.xml
-+++ /dev/null
-@@ -1,11 +0,0 @@
--<?xml version="1.0" encoding="utf-8"?>
--<shape xmlns:android="http://schemas.android.com/apk/res/android"
--    android:shape="rectangle">
+diff --git a/src/android/app/build.gradle.kts b/src/android/app/build.gradle.kts
+index b1289ec3d..9ffd5055d 100644
+--- a/src/android/app/build.gradle.kts
++++ b/src/android/app/build.gradle.kts
+@@ -29,7 +29,7 @@ android {
+     namespace = "org.citra.citra_emu"
+ 
+     compileSdkVersion = "android-34"
+-    ndkVersion = "26.1.10909125"
++    ndkVersion = "26.3.11579264"
+ 
+     compileOptions {
+         sourceCompatibility = JavaVersion.VERSION_17
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt b/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
+index c22547f81..4681bd319 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
+@@ -38,7 +38,6 @@ import org.citra.citra_emu.features.settings.model.view.InputBindingSetting
+ import org.citra.citra_emu.fragments.MessageDialogFragment
+ import org.citra.citra_emu.utils.ControllerMappingHelper
+ import org.citra.citra_emu.utils.FileBrowserHelper
+-import org.citra.citra_emu.utils.ForegroundService
+ import org.citra.citra_emu.utils.EmulationLifecycleUtil
+ import org.citra.citra_emu.utils.EmulationMenuSettings
+ import org.citra.citra_emu.utils.ThemeUtil
+@@ -47,7 +46,6 @@ import org.citra.citra_emu.viewmodel.EmulationViewModel
+ class EmulationActivity : AppCompatActivity() {
+     private val preferences: SharedPreferences
+         get() = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+-    private var foregroundService: Intent? = null
+     var isActivityRecreated = false
+ 
+     private val settingsViewModel: SettingsViewModel by viewModels()
+@@ -85,10 +83,6 @@ class EmulationActivity : AppCompatActivity() {
+             windowManager.defaultDisplay.rotation
+         )
+ 
+-        // Start a foreground service to prevent the app from getting killed in the background
+-        foregroundService = Intent(this, ForegroundService::class.java)
+-        startForegroundService(foregroundService)
 -
--    <size
--        android:width="1dp"
--        android:height="1dp" />
+         EmulationLifecycleUtil.addShutdownHook(hook = { this.finish() })
+     }
+ 
+@@ -112,7 +106,6 @@ class EmulationActivity : AppCompatActivity() {
+ 
+     override fun onDestroy() {
+         EmulationLifecycleUtil.clear()
+-        stopForegroundService(this)
+         super.onDestroy()
+     }
+ 
+@@ -452,12 +445,4 @@ class EmulationActivity : AppCompatActivity() {
+ 
+             OnFilePickerResult(result.toString())
+         }
 -
--    <solid android:color="@color/citra_outlineVariant" />
+-    companion object {
+-        fun stopForegroundService(activity: Activity) {
+-            val startIntent = Intent(activity, ForegroundService::class.java)
+-            startIntent.action = ForegroundService.ACTION_STOP
+-            activity.startForegroundService(startIntent)
+-        }
+-    }
+ }
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt b/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt
+index c2aa87de4..3e9b48f7c 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/ui/main/MainActivity.kt
+@@ -156,9 +156,6 @@ class MainActivity : AppCompatActivity(), ThemeProvider {
+             }
+         }
+ 
+-        // Dismiss previous notifications (should not happen unless a crash occurred)
+-        EmulationActivity.stopForegroundService(this)
 -
--</shape>
-diff --git a/src/android/app/src/main/res/drawable/ic_folder.xml b/src/android/app/src/main/res/drawable/ic_folder.xml
-deleted file mode 100644
-index 17d6c7927..000000000
---- a/src/android/app/src/main/res/drawable/ic_folder.xml
-+++ /dev/null
-@@ -1,9 +0,0 @@
--<vector xmlns:android="http://schemas.android.com/apk/res/android"
--    android:width="24dp"
--    android:height="24dp"
--    android:viewportWidth="24"
--    android:viewportHeight="24">
--    <path
--        android:fillColor="?attr/colorControlNormal"
--        android:pathData="M10,4H4c-1.1,0 -1.99,0.9 -1.99,2L2,18c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V8c0,-1.1 -0.9,-2 -2,-2h-8l-2,-2z" />
--</vector>
-diff --git a/src/android/app/src/main/res/drawable/ic_heart.xml b/src/android/app/src/main/res/drawable/ic_heart.xml
-deleted file mode 100644
-index 6845a40e7..000000000
---- a/src/android/app/src/main/res/drawable/ic_heart.xml
-+++ /dev/null
-@@ -1,9 +0,0 @@
--<vector xmlns:android="http://schemas.android.com/apk/res/android"
--    android:width="24dp"
--    android:height="24dp"
--    android:viewportWidth="24"
--    android:viewportHeight="24">
--    <path
--        android:fillColor="?attr/colorControlNormal"
--        android:pathData="M12,21.35l-1.45,-1.32C5.4,15.36 2,12.28 2,8.5 2,5.42 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09C13.09,3.81 14.76,3 16.5,3 19.58,3 22,5.42 22,8.5c0,3.78 -3.4,6.86 -8.55,11.54L12,21.35z" />
--</vector>
-diff --git a/src/android/app/src/main/res/drawable/ic_pause.xml b/src/android/app/src/main/res/drawable/ic_pause.xml
-deleted file mode 100644
-index ccaed7187..000000000
---- a/src/android/app/src/main/res/drawable/ic_pause.xml
-+++ /dev/null
-@@ -1,9 +0,0 @@
--<vector xmlns:android="http://schemas.android.com/apk/res/android"
--    android:width="24dp"
--    android:height="24dp"
--    android:viewportWidth="24"
--    android:viewportHeight="24">
--    <path
--        android:fillColor="?attr/colorControlNormal"
--        android:pathData="M6,19h4L10,5L6,5v14zM14,5v14h4L18,5h-4z" />
--</vector>
-diff --git a/src/android/app/src/main/res/drawable/popup_background.xml b/src/android/app/src/main/res/drawable/popup_background.xml
-deleted file mode 100644
-index 057f81c83..000000000
---- a/src/android/app/src/main/res/drawable/popup_background.xml
-+++ /dev/null
-@@ -1,4 +0,0 @@
--<shape xmlns:android="http://schemas.android.com/apk/res/android">
--    <solid android:color="?attr/colorSurface"/>
--    <corners android:radius="4dp" />
--</shape>
-diff --git a/src/android/app/src/main/res/drawable/selector_settings.xml b/src/android/app/src/main/res/drawable/selector_settings.xml
-deleted file mode 100644
-index 23748feb0..000000000
---- a/src/android/app/src/main/res/drawable/selector_settings.xml
-+++ /dev/null
-@@ -1,5 +0,0 @@
--<?xml version="1.0" encoding="utf-8"?>
--<selector xmlns:android="http://schemas.android.com/apk/res/android">
--    <item android:drawable="@drawable/ic_settings_outline" android:state_checked="false"/>
--    <item android:drawable="@drawable/ic_settings" android:state_checked="true"/>
--</selector>
+         setInsets()
+     }
+ 
+@@ -170,7 +167,6 @@ class MainActivity : AppCompatActivity(), ThemeProvider {
+     }
+ 
+     override fun onDestroy() {
+-        EmulationActivity.stopForegroundService(this)
+         super.onDestroy()
+     }
+ 
+diff --git a/src/android/app/src/main/jni/emu_window/emu_window.cpp b/src/android/app/src/main/jni/emu_window/emu_window.cpp
+index 436442acd..8e1c40cd7 100644
+--- a/src/android/app/src/main/jni/emu_window/emu_window.cpp
++++ b/src/android/app/src/main/jni/emu_window/emu_window.cpp
+@@ -27,14 +27,18 @@ static void UpdateLandscapeScreenLayout() {
+             IDCache::GetNativeLibraryClass(), IDCache::GetLandscapeScreenLayout()));
+ }
+ 
+-void EmuWindow_Android::OnSurfaceChanged(ANativeWindow* surface) {
+-    render_window = surface;
++bool EmuWindow_Android::OnSurfaceChanged(ANativeWindow* surface) {
++    if (render_window == surface) {
++        return false;
++    }
+ 
++    render_window = surface;
+     window_info.type = Frontend::WindowSystemType::Android;
+     window_info.render_surface = surface;
+ 
+     StopPresenting();
+     OnFramebufferSizeChanged();
++    return true;
+ }
+ 
+ bool EmuWindow_Android::OnTouchEvent(int x, int y, bool pressed) {
+diff --git a/src/android/app/src/main/jni/emu_window/emu_window.h b/src/android/app/src/main/jni/emu_window/emu_window.h
+index 64ead5c7f..4266fd1bb 100644
+--- a/src/android/app/src/main/jni/emu_window/emu_window.h
++++ b/src/android/app/src/main/jni/emu_window/emu_window.h
+@@ -17,7 +17,7 @@ class EmuWindow_Android : public Frontend::EmuWindow {
+     ~EmuWindow_Android();
+ 
+     /// Called by the onSurfaceChanges() method to change the surface
+-    void OnSurfaceChanged(ANativeWindow* surface);
++    bool OnSurfaceChanged(ANativeWindow* surface);
+ 
+     /// Handles touch event that occur.(Touched or released)
+     bool OnTouchEvent(int x, int y, bool pressed);
+diff --git a/src/android/app/src/main/jni/native.cpp b/src/android/app/src/main/jni/native.cpp
+index d84562e1a..393ce906d 100644
+--- a/src/android/app/src/main/jni/native.cpp
++++ b/src/android/app/src/main/jni/native.cpp
+@@ -294,12 +294,13 @@ void Java_org_citra_citra_1emu_NativeLibrary_surfaceChanged(JNIEnv* env,
+                                                             jobject surf) {
+     s_surf = ANativeWindow_fromSurface(env, surf);
+ 
++    bool notify = false;
+     if (window) {
+-        window->OnSurfaceChanged(s_surf);
++        notify = window->OnSurfaceChanged(s_surf);
+     }
+ 
+     auto& system = Core::System::GetInstance();
+-    if (system.IsPoweredOn()) {
++    if (notify && system.IsPoweredOn()) {
+         system.GPU().Renderer().NotifySurfaceChanged();
+     }
+ 
+diff --git a/src/android/gradle/wrapper/gradle-wrapper.properties b/src/android/gradle/wrapper/gradle-wrapper.properties
+index 10cba3572..03ef85ab3 100644
+--- a/src/android/gradle/wrapper/gradle-wrapper.properties
++++ b/src/android/gradle/wrapper/gradle-wrapper.properties
+@@ -3,4 +3,4 @@ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
+diff --git a/src/video_core/renderer_vulkan/vk_present_window.cpp b/src/video_core/renderer_vulkan/vk_present_window.cpp
+index ef879776a..62178c690 100644
+--- a/src/video_core/renderer_vulkan/vk_present_window.cpp
++++ b/src/video_core/renderer_vulkan/vk_present_window.cpp
+@@ -473,7 +473,7 @@ void PresentWindow::CopyToSwapchain(Frame* frame) {
+         .pSignalSemaphores = &present_ready,
+     };
+ 
+-    std::scoped_lock submit_lock{scheduler.submit_mutex};
++    std::scoped_lock submit_lock{scheduler.submit_mutex, recreate_surface_mutex};
+ 
+     try {
+         graphics_queue.submit(submit_info, frame->present_done);
