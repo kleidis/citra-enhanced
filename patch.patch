@@ -1,68 +1,124 @@
-From d9cfe71a5dd3a76925dc1289097c4a598d5a3ba8 Mon Sep 17 00:00:00 2001
-From: Gamer64ytb <76565986+Gamer64ytb@users.noreply.github.com>
-Date: Sun, 12 May 2024 12:03:57 +0200
-Subject: [PATCH] Minor shortcuts update
+From 7ab25e8afcd469ab9ea884af48a102e1f713dc1d Mon Sep 17 00:00:00 2001
+From: Gamer64 <76565986+Gamer64ytb@users.noreply.github.com>
+Date: Wed, 26 Jun 2024 17:48:44 +0200
+Subject: [PATCH] android: Gamepads can now control the in-game menu
 
-Co-Authored-By: OpenSauce <48618519+opensauce04@users.noreply.github.com>
+Co-Authored-By: OpenSauce <opensauce04@gmail.com>
 ---
- src/citra_qt/main.cpp | 8 ++++----
- src/citra_qt/main.h   | 4 ++--
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ .../citra_emu/activities/EmulationActivity.kt | 23 +++++++++++++------
+ .../citra_emu/fragments/EmulationFragment.kt  | 10 ++++++++
+ .../shader/generator/spv_shader_gen.cpp       |  2 +-
+ 3 files changed, 27 insertions(+), 8 deletions(-)
 
-diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
-index d8a4520e5..7b9f55cfa 100644
---- a/src/citra_qt/main.cpp
-+++ b/src/citra_qt/main.cpp
-@@ -1776,7 +1776,7 @@ bool GMainWindow::CreateShortcutMessagesGUI(QWidget* parent, int message,
-     int result = 0;
-     QMessageBox::StandardButtons buttons;
-     switch (message) {
--    case GMainWindow::CREATE_SHORTCUT_MSGBOX_FULLSCREEN_YES:
-+    case GMainWindow::CREATE_SHORTCUT_MSGBOX_FULLSCREEN_PROMPT:
-         buttons = QMessageBox::Yes | QMessageBox::No;
-         result =
-             QMessageBox::information(parent, tr("Create Shortcut"),
-@@ -1786,7 +1786,7 @@ bool GMainWindow::CreateShortcutMessagesGUI(QWidget* parent, int message,
-         QMessageBox::information(parent, tr("Create Shortcut"),
-                                  tr("Successfully created a shortcut to %1").arg(game_title));
-         return false;
--    case GMainWindow::CREATE_SHORTCUT_MSGBOX_APPVOLATILE_WARNING:
-+    case GMainWindow::CREATE_SHORTCUT_MSGBOX_APPIMAGE_VOLATILE_WARNING:
-         buttons = QMessageBox::StandardButton::Ok | QMessageBox::StandardButton::Cancel;
-         result =
-             QMessageBox::warning(this, tr("Create Shortcut"),
-@@ -1894,7 +1894,7 @@ void GMainWindow::OnGameListCreateShortcut(u64 program_id, const std::string& ga
-         std::string(Common::g_scm_rev).substr(0, 9).append(".AppImage");
-     if (citra_command.string().ends_with(appimage_ending) &&
-         !UISettings::values.shortcut_already_warned) {
--        if (CreateShortcutMessagesGUI(this, CREATE_SHORTCUT_MSGBOX_APPVOLATILE_WARNING,
-+        if (CreateShortcutMessagesGUI(this, CREATE_SHORTCUT_MSGBOX_APPIMAGE_VOLATILE_WARNING,
-                                       qt_game_title)) {
-             return;
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt b/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
+index 17a5b677b..119188d07 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/activities/EmulationActivity.kt
+@@ -38,6 +38,7 @@ import org.citra.citra_emu.features.settings.model.IntSetting
+ import org.citra.citra_emu.features.settings.model.BooleanSetting
+ import org.citra.citra_emu.features.settings.model.SettingsViewModel
+ import org.citra.citra_emu.features.settings.model.view.InputBindingSetting
++import org.citra.citra_emu.fragments.EmulationFragment
+ import org.citra.citra_emu.fragments.MessageDialogFragment
+ import org.citra.citra_emu.utils.ControllerMappingHelper
+ import org.citra.citra_emu.utils.EmulationLifecycleUtil
+@@ -52,14 +53,20 @@ class EmulationActivity : AppCompatActivity() {
+         get() = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+     private var foregroundService: Intent? = null
+     var isActivityRecreated = false
+-
+-    private val settingsViewModel: SettingsViewModel by viewModels()
+     private val emulationViewModel: EmulationViewModel by viewModels()
++    private val settingsViewModel: SettingsViewModel by viewModels()
+ 
+     private lateinit var binding: ActivityEmulationBinding
+     private lateinit var screenAdjustmentUtil: ScreenAdjustmentUtil
+     private lateinit var hotkeyUtility: HotkeyUtility
+ 
++    private val emulationFragment: EmulationFragment
++        get() {
++            val navHostFragment =
++                supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
++            return navHostFragment.getChildFragmentManager().fragments.last() as EmulationFragment
++        }
++
+     private var isEmulationRunning: Boolean = false
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+@@ -224,6 +231,10 @@ class EmulationActivity : AppCompatActivity() {
+             return false
          }
-@@ -1903,7 +1903,7 @@ void GMainWindow::OnGameListCreateShortcut(u64 program_id, const std::string& ga
- #endif // __linux__
-     // Create shortcut
-     std::string arguments = fmt::format("-g \"{:s}\"", game_path);
--    if (CreateShortcutMessagesGUI(this, CREATE_SHORTCUT_MSGBOX_FULLSCREEN_YES, qt_game_title)) {
-+    if (CreateShortcutMessagesGUI(this, CREATE_SHORTCUT_MSGBOX_FULLSCREEN_PROMPT, qt_game_title)) {
-         arguments = "-f " + arguments;
+ 
++        if (emulationFragment.isDrawerOpen()) {
++            return super.dispatchKeyEvent(event)
++        }
++
+         val button =
+             preferences.getInt(InputBindingSetting.getInputButtonKey(event.keyCode), event.keyCode)
+         val action: Int = when (event.action) {
+@@ -262,11 +273,9 @@ class EmulationActivity : AppCompatActivity() {
+ 
+     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+         // TODO: Move this check into native code - prevents crash if input pressed before starting emulation
+-        if (!NativeLibrary.isRunning()) {
+-            return super.dispatchGenericMotionEvent(event)
+-        }
+-
+-        if (event.source and InputDevice.SOURCE_CLASS_JOYSTICK == 0) {
++        if (!NativeLibrary.isRunning() ||
++            (event.source and InputDevice.SOURCE_CLASS_JOYSTICK == 0) ||
++            emulationFragment.isDrawerOpen()) {
+             return super.dispatchGenericMotionEvent(event)
+         }
+ 
+diff --git a/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt b/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt
+index 794e964a0..ab675b6d7 100644
+--- a/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt
++++ b/src/android/app/src/main/java/org/citra/citra_emu/fragments/EmulationFragment.kt
+@@ -196,6 +196,9 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+                     emulationState.pause()
+                 }
+                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
++                binding.surfaceInputOverlay.isClickable = false
++                binding.surfaceInputOverlay.isFocusable = false
++                binding.surfaceInputOverlay.isFocusableInTouchMode = false
+             }
+ 
+             override fun onDrawerClosed(drawerView: View) {
+@@ -203,6 +206,9 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+                     emulationState.unpause()
+                 }
+                 binding.drawerLayout.setDrawerLockMode(EmulationMenuSettings.drawerLockMode)
++                binding.surfaceInputOverlay.isClickable = true
++                binding.surfaceInputOverlay.isFocusable = true
++                binding.surfaceInputOverlay.isFocusableInTouchMode = true
+             }
+ 
+             override fun onDrawerStateChanged(newState: Int) {
+@@ -425,6 +431,10 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
+         }
      }
-     const std::string comment = fmt::format("Start {:s} with the Citra Emulator", game_title);
-diff --git a/src/citra_qt/main.h b/src/citra_qt/main.h
-index 3309bfd3d..bdbf52a75 100644
---- a/src/citra_qt/main.h
-+++ b/src/citra_qt/main.h
-@@ -203,10 +203,10 @@ public slots:
-     void closeEvent(QCloseEvent* event) override;
  
-     enum {
--        CREATE_SHORTCUT_MSGBOX_FULLSCREEN_YES,
-+        CREATE_SHORTCUT_MSGBOX_FULLSCREEN_PROMPT,
-         CREATE_SHORTCUT_MSGBOX_SUCCESS,
-         CREATE_SHORTCUT_MSGBOX_ERROR,
--        CREATE_SHORTCUT_MSGBOX_APPVOLATILE_WARNING,
-+        CREATE_SHORTCUT_MSGBOX_APPIMAGE_VOLATILE_WARNING,
-     };
++    fun isDrawerOpen(): Boolean {
++        return binding.drawerLayout.isOpen
++    }
++
+     private fun togglePause() {
+         if (emulationState.isPaused) {
+             emulationState.unpause()
+diff --git a/src/video_core/shader/generator/spv_shader_gen.cpp b/src/video_core/shader/generator/spv_shader_gen.cpp
+index b22c40c70..43491977f 100644
+--- a/src/video_core/shader/generator/spv_shader_gen.cpp
++++ b/src/video_core/shader/generator/spv_shader_gen.cpp
+@@ -2,10 +2,10 @@
+ // Licensed under GPLv2 or any later version
+ // Refer to the license.txt file included.
  
-     bool CreateShortcutMessagesGUI(QWidget* parent, int message, const QString& game_title);
++#include "common/settings.h"
+ #include "video_core/pica/regs_rasterizer.h"
+ #include "video_core/shader/generator/shader_gen.h"
+ #include "video_core/shader/generator/spv_shader_gen.h"
+-#include "common/settings.h"
+ 
+ using VSOutputAttributes = Pica::RasterizerRegs::VSOutputAttributes;
+ 
