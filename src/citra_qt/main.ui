@@ -199,13 +199,11 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="action_Check_For_Updates"/>
     <addaction name="action_Open_Maintenance_Tool"/>
     <addaction name="separator"/>
     <addaction name="action_Report_Compatibility"/>
     <addaction name="separator"/>
     <addaction name="action_Open_Log_Folder"/>
-    <addaction name="action_FAQ"/>
     <addaction name="action_About"/>
    </widget>
    <addaction name="menu_File"/>

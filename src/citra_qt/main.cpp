@@ -963,9 +963,6 @@ void GMainWindow::ConnectMenuEvents() {
         QString path = QString::fromStdString(FileUtil::GetUserPath(FileUtil::UserPath::LogDir));
         QDesktopServices::openUrl(QUrl::fromLocalFile(path));
     });
-    connect_menu(ui->action_FAQ, []() {
-        QDesktopServices::openUrl(QUrl(QStringLiteral("https://citra-emu.org/wiki/faq/")));
-    });
     connect_menu(ui->action_About, &GMainWindow::OnMenuAboutCitra);
 
 #if ENABLE_QT_UPDATER
