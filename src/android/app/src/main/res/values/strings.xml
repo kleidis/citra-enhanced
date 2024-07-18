@@ -56,9 +56,9 @@
     <string name="licenses_description">Projects that make Citra for Android possible</string>
     <string name="build">Build</string>
     <string name="licenses">Licenses</string>
-    <string name="support_link" translatable="false">https://discord.gg/FAXfZV9</string>
-    <string name="website_link" translatable="false">https://citra-emu.org/</string>
-    <string name="github_link" translatable="false">https://github.com/citra-emu</string>
+    <string name="support_link" translatable="false">https://discord.gg/8xjMHWEuf6</string>
+    <string name="website_link" translatable="false">https://github.com/CitraEnhanced</string>
+    <string name="github_link" translatable="false">https://github.com/CitraEnhanced/citra</string>
 
     <!-- Setup strings -->
     <string name="welcome">Welcome!</string>
