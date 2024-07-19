@@ -220,7 +220,16 @@ bool RasterizerCache<T>::AccelerateTextureCopy(const Pica::DisplayTransferConfig
     dst_params.stride =
         dst_params.width + src_info.PixelsInBytes(src_info.is_tiled ? output_gap / 8 : output_gap);
     dst_params.height = src_rect.GetHeight() / src_info.res_scale;
-    dst_params.res_scale = src_info.res_scale;
+
+    // Some games (e.g., FE: Awakening) `TexturCopy` at a resolution lower than the native 3DS
+    // resolution to simulate bloom, rendering these at an upscaled resolution creates ghosting
+    // artifacts.
+    if (Settings::values.simulate_bloom && src_info.res_scale > 1 &&
+        (dst_params.height < 400 || dst_params.width < 240)) {
+        dst_params.res_scale = 1;
+    } else {
+        dst_params.res_scale = src_info.res_scale;
+    }
     dst_params.UpdateParams();
 
     // Since we are going to invalidate the gap if there is one, we will have to load it first
