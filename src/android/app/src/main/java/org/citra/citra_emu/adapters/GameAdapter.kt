@@ -156,7 +156,7 @@ class GameAdapter(private val activity: AppCompatActivity) :
 
             binding.textGameTitle.text = game.title
             binding.textCompany.text = game.company
-            binding.textGameId.text = game.titleId.toString()
+            binding.textGameId.text = String.format("%016X:", game.titleId)
 
             val backgroundColorId =
                 if (
