@@ -347,7 +347,7 @@ void GPU::SubmitCmdList(u32 index) {
         return;
     }
 
-    CITRA_PROFILE("GPU", "Command List Processing");
+    MANDARIN_PROFILE("GPU", "Command List Processing");
 
     // Forward command list processing to the PICA core.
     const PAddr addr = config.GetPhysicalAddress(index);
@@ -398,12 +398,12 @@ void GPU::MemoryTransfer() {
 
     // Perform memory transfer
     if (config.is_texture_copy) {
-        CITRA_PROFILE("GPU", "Texture Copy");
+        MANDARIN_PROFILE("GPU", "Texture Copy");
         if (!impl->rasterizer->AccelerateTextureCopy(config)) {
             impl->sw_blitter->TextureCopy(config);
         }
     } else {
-        CITRA_PROFILE("GPU", "Display Transfer");
+        MANDARIN_PROFILE("GPU", "Display Transfer");
         if (!impl->rasterizer->AccelerateDisplayTransfer(config)) {
             impl->sw_blitter->DisplayTransfer(config);
         }

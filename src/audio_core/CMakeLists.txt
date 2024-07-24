@@ -70,6 +70,6 @@ if(ANDROID)
     target_link_libraries(audio_core PRIVATE oboe)
 endif()
 
-if (CITRA_USE_PRECOMPILED_HEADERS)
+if (MANDARIN_USE_PRECOMPILED_HEADERS)
     target_precompile_headers(audio_core PRIVATE precompiled_headers.h)
 endif()

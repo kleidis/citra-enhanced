@@ -58,7 +58,7 @@ CustomTexManager::CustomTexManager(Core::System& system_)
 CustomTexManager::~CustomTexManager() = default;
 
 void CustomTexManager::TickFrame() {
-    CITRA_PROFILE("CustomTexManager", "Tick Frame");
+    MANDARIN_PROFILE("CustomTexManager", "Tick Frame");
     if (!textures_loaded) {
         return;
     }

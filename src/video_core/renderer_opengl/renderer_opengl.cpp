@@ -179,7 +179,7 @@ void RendererOpenGL::RenderToMailbox(const Layout::FramebufferLayout& layout,
 
     Frontend::Frame* frame;
     {
-        CITRA_PROFILE("OpenGL", "Wait For Present");
+        MANDARIN_PROFILE("OpenGL", "Wait For Present");
 
         frame = mailbox->GetRenderFrame();
 
@@ -206,7 +206,7 @@ void RendererOpenGL::RenderToMailbox(const Layout::FramebufferLayout& layout,
     }
 
     {
-        CITRA_PROFILE("OpenGL", "Render Frame");
+        MANDARIN_PROFILE("OpenGL", "Render Frame");
         // Recreate the frame if the size of the window has changed
         if (layout.width != frame->width || layout.height != frame->height) {
             LOG_DEBUG(Render_OpenGL, "Reloading render frame");
