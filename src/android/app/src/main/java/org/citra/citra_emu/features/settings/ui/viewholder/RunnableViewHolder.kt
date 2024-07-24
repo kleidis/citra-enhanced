@@ -2,16 +2,16 @@
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
-package org.citra.citra_emu.features.settings.ui.viewholder
+package io.github.mandarin3ds.mandarin.features.settings.ui.viewholder
 
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
-import org.citra.citra_emu.NativeLibrary
-import org.citra.citra_emu.databinding.ListItemSettingBinding
-import org.citra.citra_emu.features.settings.model.view.RunnableSetting
-import org.citra.citra_emu.features.settings.model.view.SettingsItem
-import org.citra.citra_emu.features.settings.ui.SettingsAdapter
-import org.citra.citra_emu.activities.EmulationActivity
+import io.github.mandarin3ds.mandarin.NativeLibrary
+import io.github.mandarin3ds.mandarin.databinding.ListItemSettingBinding
+import io.github.mandarin3ds.mandarin.features.settings.model.view.RunnableSetting
+import io.github.mandarin3ds.mandarin.features.settings.model.view.SettingsItem
+import io.github.mandarin3ds.mandarin.features.settings.ui.SettingsAdapter
+import io.github.mandarin3ds.mandarin.activities.EmulationActivity
 
 class RunnableViewHolder(val binding: ListItemSettingBinding, adapter: SettingsAdapter) :
     SettingViewHolder(binding.root, adapter) {

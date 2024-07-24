@@ -187,7 +187,7 @@ void CustomTexManager::PrepareDumping(u64 title_id) {
     }
 
     nlohmann::ordered_json json;
-    json["author"] = "citra";
+    json["author"] = "mandarin";
     json["version"] = "1.0.0";
     json["description"] = "A graphics pack";
 

@@ -12,8 +12,8 @@
 #include <QRunnable>
 #include <QString>
 #include <QVector>
-#include "citra_qt/compatibility_list.h"
-#include "citra_qt/play_time_manager.h"
+#include "mandarin_qt/compatibility_list.h"
+#include "mandarin_qt/play_time_manager.h"
 #include "common/common_types.h"
 
 namespace Service::FS {

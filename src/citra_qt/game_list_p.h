@@ -18,9 +18,9 @@
 #include <QStandardItem>
 #include <QString>
 #include <QWidget>
-#include "citra_qt/play_time_manager.h"
-#include "citra_qt/uisettings.h"
-#include "citra_qt/util/util.h"
+#include "mandarin_qt/play_time_manager.h"
+#include "mandarin_qt/uisettings.h"
+#include "mandarin_qt/util/util.h"
 #include "common/file_util.h"
 #include "common/logging/log.h"
 #include "common/string_util.h"

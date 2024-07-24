@@ -5,8 +5,8 @@
 #include <chrono>
 #include <string>
 #include <discord_rpc.h>
-#include "citra_qt/discord_impl.h"
-#include "citra_qt/uisettings.h"
+#include "mandarin_qt/discord_impl.h"
+#include "mandarin_qt/uisettings.h"
 #include "common/common_types.h"
 #include "core/core.h"
 #include "core/loader/loader.h"
@@ -41,7 +41,7 @@ void DiscordImpl::Update() {
     }
 
     DiscordRichPresence presence{};
-    presence.largeImageKey = "citra";
+    presence.largeImageKey = "mandarin";
     if (is_powered_on) {
         presence.largeImageText = title.c_str();
         presence.state = title.c_str();
