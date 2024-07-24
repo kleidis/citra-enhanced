@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://github.com/CitraEnhanced/citra/blob/2fb4b5e4f3f3c7bcb06c1eac97181f845fe72b57/branding/Citra-Enhanced-256.png" alt="citra" width="188"/>
+  <img src="https://github.com/mandarin3ds/citra/blob/2fb4b5e4f3f3c7bcb06c1eac97181f845fe72b57/branding/Citra-Enhanced-256.png" alt="citra" width="188"/>
 </p>
 <p align="center" style="font-size:144px;">
   <strong>Citra-Enhanced</strong>
@@ -11,8 +11,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/downloads/CitraEnhanced/citra/total" alt="GitHub all releases"/>
-  <a href="https://github.com/CitraEnhanced/citra/releases/latest">
+  <img src="https://img.shields.io/github/downloads/mandarin3ds/citra/total" alt="GitHub all releases"/>
+  <a href="https://github.com/mandarin3ds/citra/releases/latest">
     <img src="https://img.shields.io/badge/Download-Latest_Release-2ea44f?logo=github&logoColor=white" alt="Download - Latest Release"/>
   </a>
   <br>
@@ -50,19 +50,19 @@ Memory: 2GB of RAM. 4GB is recommended
 
 |Platform|Link|
 |--------|--------|
-| 🪟 Windows|[MSVC](https://github.com/CitraEnhanced/citra/releases/latest/download/windows-msvc.zip)|
-| 📱 Android|[APK](https://github.com/CitraEnhanced/citra/releases/latest/download/Android-APK.zip)|
-| 🐧 Linux|[AppImage](https://github.com/CitraEnhanced/citra/releases/latest/download/linux-appimage.zip)|
-| 🍎 Mac OS|[Universal](https://github.com/CitraEnhanced/citra/releases/latest/download/macos-universal.zip)|
+| 🪟 Windows|[MSVC](https://github.com/mandarin3ds/citra/releases/latest/download/windows-msvc.zip)|
+| 📱 Android|[APK](https://github.com/mandarin3ds/citra/releases/latest/download/Android-APK.zip)|
+| 🐧 Linux|[AppImage](https://github.com/mandarin3ds/citra/releases/latest/download/linux-appimage.zip)|
+| 🍎 Mac OS|[Universal](https://github.com/mandarin3ds/citra/releases/latest/download/macos-universal.zip)|
 
 ## ⚠️ Dev Builds (Pre-release software, may be buggy)
 
 |Platform|Status|Download|
 |--------|------------|--------|
-| 🪟 Windows|[![Qt Build](https://github.com/CitraEnhanced/citra/actions/workflows/build.yml/badge.svg)](https://github.com/CitraEnhanced/citra/actions/workflows/Qt_Build.yml)|[Windows MSVC](https://nightly.link/CitraEnhanced/citra/workflows/build/master/windows-msvc.zip)|
-| 📱 Android|[![Qt Build](https://github.com/CitraEnhanced/citra/actions/workflows/build.yml/badge.svg)](https://github.com/CitraEnhanced/citra/actions/workflows/Qt_Build.yml)|[Android-APK](https://nightly.link/CitraEnhanced/citra/workflows/build/master/Android-APK.zip)|
-| 🐧 Linux|[![Qt Build](https://github.com/CitraEnhanced/citra/actions/workflows/build.yml/badge.svg)](https://github.com/CitraEnhanced/citra/actions/workflows/Qt_Build.yml)|[Linux AppImage](https://nightly.link/CitraEnhanced/citra/workflows/build/master/linux-appimage.zip)|
-| 🍎 Mac OS|[![Qt Build](https://github.com/CitraEnhanced/citra/actions/workflows/build.yml/badge.svg)](https://github.com/CitraEnhanced/citra/actions/workflows/Qt_Build.yml)|[Mac OS Universal](https://nightly.link/CitraEnhanced/citra/workflows/build/master/macos-universal.zip)|
+| 🪟 Windows|[![Qt Build](https://github.com/mandarin3ds/citra/actions/workflows/build.yml/badge.svg)](https://github.com/mandarin3ds/citra/actions/workflows/Qt_Build.yml)|[Windows MSVC](https://nightly.link/mandarin3ds/citra/workflows/build/master/windows-msvc.zip)|
+| 📱 Android|[![Qt Build](https://github.com/mandarin3ds/citra/actions/workflows/build.yml/badge.svg)](https://github.com/mandarin3ds/citra/actions/workflows/Qt_Build.yml)|[Android-APK](https://nightly.link/mandarin3ds/citra/workflows/build/master/Android-APK.zip)|
+| 🐧 Linux|[![Qt Build](https://github.com/mandarin3ds/citra/actions/workflows/build.yml/badge.svg)](https://github.com/mandarin3ds/citra/actions/workflows/Qt_Build.yml)|[Linux AppImage](https://nightly.link/mandarin3ds/citra/workflows/build/master/linux-appimage.zip)|
+| 🍎 Mac OS|[![Qt Build](https://github.com/mandarin3ds/citra/actions/workflows/build.yml/badge.svg)](https://github.com/mandarin3ds/citra/actions/workflows/Qt_Build.yml)|[Mac OS Universal](https://nightly.link/mandarin3ds/citra/workflows/build/master/macos-universal.zip)|
 
 # Contribution
 

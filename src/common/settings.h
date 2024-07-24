@@ -541,7 +541,7 @@ struct Values {
     SwitchableSetting<bool> priority_boost_starved_threads{true, "priority_boost_starved_threads"};
     SwitchableSetting<bool> reduce_downcount_slice{false, "reduce_downcount_slice"};
     // Reimplementation of old (and fixed) mandarin frameskip
-    // See https://github.com/CitraEnhanced/mandarin/commit/e279a6955edf644cf832dd329ac72931aea8add7
+    // See https://github.com/mandarin3ds/mandarin/commit/e279a6955edf644cf832dd329ac72931aea8add7
     SwitchableSetting<u64> frame_skip{0, "frame_skip"};
 
     // Audio
