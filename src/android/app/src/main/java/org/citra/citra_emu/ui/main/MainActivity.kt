@@ -45,7 +45,7 @@ import io.github.mandarin3ds.mandarin.features.settings.ui.SettingsActivity
 import io.github.mandarin3ds.mandarin.features.settings.utils.SettingsFile
 import io.github.mandarin3ds.mandarin.fragments.SelectUserDirectoryDialogFragment
 import io.github.mandarin3ds.mandarin.utils.CiaInstallWorker
-import io.github.mandarin3ds.mandarin.utils.CitraDirectoryHelper
+import io.github.mandarin3ds.mandarin.utils.MandarinDirectoryHelper
 import io.github.mandarin3ds.mandarin.utils.DirectoryInitialization
 import io.github.mandarin3ds.mandarin.utils.FileBrowserHelper
 import io.github.mandarin3ds.mandarin.utils.InsetsHelper
@@ -66,12 +66,12 @@ class MainActivity : AppCompatActivity(), ThemeProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
-            !DirectoryInitialization.areCitraDirectoriesReady() &&
+            !DirectoryInitialization.areMandarinDirectoriesReady() &&
                     PermissionsHandler.hasWriteAccess(this)
         }
 
         if (PermissionsHandler.hasWriteAccess(applicationContext) &&
-            DirectoryInitialization.areCitraDirectoriesReady()) {
+            DirectoryInitialization.areMandarinDirectoriesReady()) {
             settingsViewModel.settings.loadSettings()
         }
 
@@ -298,14 +298,14 @@ class MainActivity : AppCompatActivity(), ThemeProvider {
             windowInsets
         }
 
-    val openCitraDirectory = registerForActivityResult<Uri, Uri>(
+    val openMandarinDirectory = registerForActivityResult<Uri, Uri>(
         ActivityResultContracts.OpenDocumentTree()
     ) { result: Uri? ->
         if (result == null) {
             return@registerForActivityResult
         }
 
-        CitraDirectoryHelper(this@MainActivity).showCitraDirectoryDialog(result)
+        MandarinDirectoryHelper(this@MainActivity).showMandarinDirectoryDialog(result)
     }
 
     val ciaFileInstaller = registerForActivityResult(

@@ -250,7 +250,7 @@ private slots:
     void OnConfigure();
     void OnLoadAmiibo();
     void OnRemoveAmiibo();
-    void OnOpenCitraFolder();
+    void OnOpenMandarinFolder();
     void OnToggleFilterBar();
     void OnDisplayTitleBars(bool);
     void InitializeHotkeys();
@@ -281,7 +281,7 @@ private slots:
     void OnStopVideoDumping();
     void OnCoreError(Core::System::ResultStatus, std::string);
     /// Called whenever a user selects Help->About Lemoande
-    void OnMenuAboutCitra();
+    void OnMenuAboutMandarin();
 
 #if ENABLE_QT_UPDATER
     void OnUpdateFound(bool found, bool error);
@@ -344,7 +344,7 @@ private:
     MultiplayerState* multiplayer_state = nullptr;
     std::unique_ptr<Config> config;
 
-    // Whether emulation is currently running in Citra.
+    // Whether emulation is currently running in Mandarin.
     bool emulation_running = false;
     std::unique_ptr<EmuThread> emu_thread;
     // The title of the game currently running

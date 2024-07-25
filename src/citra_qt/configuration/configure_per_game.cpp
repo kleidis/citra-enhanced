@@ -91,7 +91,7 @@ void ConfigurePerGame::showEvent(QShowEvent* event) {
 void ConfigurePerGame::ResetDefaults() {
     const auto config_file_name = title_id == 0 ? filename : fmt::format("{:016X}", title_id);
     QMessageBox::StandardButton answer = QMessageBox::question(
-        this, tr("Citra"), tr("Are you sure you want to <b>reset your settings for this game</b>?"),
+        this, tr("Mandarin"), tr("Are you sure you want to <b>reset your settings for this game</b>?"),
         QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
     if (answer == QMessageBox::No) {

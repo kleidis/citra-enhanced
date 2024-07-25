@@ -1,12 +1,12 @@
 <h1 align="center">
-  <img src="https://github.com/mandarin3ds/citra/blob/2fb4b5e4f3f3c7bcb06c1eac97181f845fe72b57/branding/Citra-Enhanced-256.png" alt="citra" width="188"/>
+  <img src="https://github.com/mandarin3ds/citra/blob/2fb4b5e4f3f3c7bcb06c1eac97181f845fe72b57/branding/Mandarin-Enhanced-256.png" alt="citra" width="188"/>
 </p>
 <p align="center" style="font-size:144px;">
-  <strong>Citra-Enhanced</strong>
+  <strong>Mandarin-Enhanced</strong>
 </h1>
 
 <p align="center">
-  <strong>This fork is just Citra with tweaks/additions which should result in better performance than the original Citra</strong>
+  <strong>This fork is just Mandarin with tweaks/additions which should result in better performance than the original Mandarin</strong>
   </strong>Feel free to download this build and test it, if you run into any bugs please open an issue on GitHub or contact me on the Discord / Telegram</strong>
 </p>
 

@@ -43,7 +43,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import io.github.mandarin3ds.mandarin.CitraApplication
+import io.github.mandarin3ds.mandarin.MandarinApplication
 import io.github.mandarin3ds.mandarin.EmulationNavigationDirections
 import io.github.mandarin3ds.mandarin.NativeLibrary
 import io.github.mandarin3ds.mandarin.R
@@ -71,7 +71,7 @@ import java.io.File
 
 class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.FrameCallback {
     private val preferences: SharedPreferences
-        get() = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        get() = PreferenceManager.getDefaultSharedPreferences(MandarinApplication.appContext)
 
     private lateinit var emulationState: EmulationState
     private var perfStatsUpdater: Runnable? = null
@@ -439,10 +439,10 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
             return
         }
 
-        if (DirectoryInitialization.areCitraDirectoriesReady()) {
+        if (DirectoryInitialization.areMandarinDirectoriesReady()) {
             emulationState.run(emulationActivity.isActivityRecreated)
         } else {
-            setupCitraDirectoriesThenStartEmulation()
+            setupMandarinDirectoriesThenStartEmulation()
         }
     }
 
@@ -459,7 +459,7 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
         super.onDetach()
     }
 
-    private fun setupCitraDirectoriesThenStartEmulation() {
+    private fun setupMandarinDirectoriesThenStartEmulation() {
         val directoryInitializationState = DirectoryInitialization.start()
         if (directoryInitializationState ===
             DirectoryInitializationState.MANDARIN_DIRECTORIES_INITIALIZED
