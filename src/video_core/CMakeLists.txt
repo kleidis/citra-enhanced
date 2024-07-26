@@ -217,6 +217,6 @@ if ("arm64" IN_LIST ARCHITECTURE)
     target_link_libraries(video_core PUBLIC oaknut)
 endif()
 
-if (CITRA_USE_PRECOMPILED_HEADERS)
+if (MANDARINE_USE_PRECOMPILED_HEADERS)
     target_precompile_headers(video_core PRIVATE precompiled_headers.h)
 endif()

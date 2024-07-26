@@ -23,7 +23,7 @@ if(UNIX AND NOT APPLE)
     install(TARGETS mandarine-room RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 endif()
 
-if (CITRA_USE_PRECOMPILED_HEADERS)
+if (MANDARINE_USE_PRECOMPILED_HEADERS)
     target_precompile_headers(mandarine-room PRIVATE precompiled_headers.h)
 endif()
 

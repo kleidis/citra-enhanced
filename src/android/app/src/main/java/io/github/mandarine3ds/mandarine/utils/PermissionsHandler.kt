@@ -13,7 +13,7 @@ import androidx.documentfile.provider.DocumentFile
 import io.github.mandarine3ds.mandarine.MandarineApplication
 
 object PermissionsHandler {
-    const val CITRA_DIRECTORY = "CITRA_DIRECTORY"
+    const val MANDARINE_DIRECTORY = "MANDARINE_DIRECTORY"
     val preferences: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
 
@@ -41,10 +41,10 @@ object PermissionsHandler {
 
     val citraDirectory: Uri
         get() {
-            val directoryString = preferences.getString(CITRA_DIRECTORY, "")
+            val directoryString = preferences.getString(MANDARINE_DIRECTORY, "")
             return Uri.parse(directoryString)
         }
 
     fun setMandarineDirectory(uriString: String?) =
-        preferences.edit().putString(CITRA_DIRECTORY, uriString).apply()
+        preferences.edit().putString(MANDARINE_DIRECTORY, uriString).apply()
 }

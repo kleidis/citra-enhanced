@@ -344,8 +344,8 @@ target_compile_definitions(mandarine-qt PRIVATE
     -DQT_NO_CAST_TO_ASCII
 )
 
-if (CITRA_ENABLE_COMPATIBILITY_REPORTING)
-    target_compile_definitions(mandarine-qt PRIVATE -DCITRA_ENABLE_COMPATIBILITY_REPORTING)
+if (MANDARINE_ENABLE_COMPATIBILITY_REPORTING)
+    target_compile_definitions(mandarine-qt PRIVATE -DMANDARINE_ENABLE_COMPATIBILITY_REPORTING)
 endif()
 
 if (USE_DISCORD_PRESENCE)
@@ -365,7 +365,7 @@ if(UNIX AND NOT APPLE)
     install(TARGETS mandarine-qt RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
 endif()
 
-if (CITRA_USE_PRECOMPILED_HEADERS)
+if (MANDARINE_USE_PRECOMPILED_HEADERS)
     target_precompile_headers(mandarine-qt PRIVATE precompiled_headers.h)
 endif()
 

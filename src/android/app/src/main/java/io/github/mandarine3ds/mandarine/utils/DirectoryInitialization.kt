@@ -31,7 +31,7 @@ object DirectoryInitialization {
             return null
         }
 
-        if (directoryState != DirectoryInitializationState.CITRA_DIRECTORIES_INITIALIZED) {
+        if (directoryState != DirectoryInitializationState.MANDARINE_DIRECTORIES_INITIALIZED) {
             directoryState = if (hasWriteAccess(context)) {
                 if (setMandarineUserDirectory()) {
                     MandarineApplication.documentsTree.setRoot(Uri.parse(userPath))
@@ -39,7 +39,7 @@ object DirectoryInitialization {
                     NativeLibrary.logUserDirectory(userPath.toString())
                     NativeLibrary.createConfigFile()
                     GpuDriverHelper.initializeDriverParameters()
-                    DirectoryInitializationState.CITRA_DIRECTORIES_INITIALIZED
+                    DirectoryInitializationState.MANDARINE_DIRECTORIES_INITIALIZED
                 } else {
                     DirectoryInitializationState.CANT_FIND_EXTERNAL_STORAGE
                 }
@@ -53,7 +53,7 @@ object DirectoryInitialization {
 
     @JvmStatic
     fun areMandarineDirectoriesReady(): Boolean {
-        return directoryState == DirectoryInitializationState.CITRA_DIRECTORIES_INITIALIZED
+        return directoryState == DirectoryInitializationState.MANDARINE_DIRECTORIES_INITIALIZED
     }
 
     fun resetMandarineDirectoryState() {
@@ -83,7 +83,7 @@ object DirectoryInitialization {
     }
 
     enum class DirectoryInitializationState {
-        CITRA_DIRECTORIES_INITIALIZED,
+        MANDARINE_DIRECTORIES_INITIALIZED,
         EXTERNAL_STORAGE_PERMISSION_NEEDED,
         CANT_FIND_EXTERNAL_STORAGE
     }

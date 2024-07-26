@@ -32,7 +32,7 @@ class HomeViewModel : ViewModel() {
     private val _userDir = MutableStateFlow(
         Uri.parse(
             PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
-                .getString(PermissionsHandler.CITRA_DIRECTORY, "")
+                .getString(PermissionsHandler.MANDARINE_DIRECTORY, "")
         ).path ?: ""
     )
 

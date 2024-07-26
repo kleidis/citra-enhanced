@@ -462,7 +462,7 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
     private fun setupMandarineDirectoriesThenStartEmulation() {
         val directoryInitializationState = DirectoryInitialization.start()
         if (directoryInitializationState ===
-            DirectoryInitializationState.CITRA_DIRECTORIES_INITIALIZED
+            DirectoryInitializationState.MANDARINE_DIRECTORIES_INITIALIZED
         ) {
             emulationState.run(emulationActivity.isActivityRecreated)
         } else if (directoryInitializationState ===
