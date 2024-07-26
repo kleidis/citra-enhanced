@@ -66,7 +66,7 @@ static void PrintVersion() {
               << " Libnetwork: " << Network::network_version << std::endl;
 }
 
-/// The magic text at the beginning of a citra-room ban list file.
+/// The magic text at the beginning of a mandarine-room ban list file.
 static constexpr char BanListMagic[] = "MandarineRoom-BanList-1";
 
 static constexpr char token_delimiter{':'};
@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
     std::string token;
     std::string web_api_url;
     std::string ban_list_file;
-    std::string log_file = "citra-room.log";
+    std::string log_file = "mandarine-room.log";
     u64 preferred_game_id = 0;
     u16 port = Network::DefaultRoomPort;
     u32 max_members = 16;

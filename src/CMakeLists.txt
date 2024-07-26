@@ -189,7 +189,7 @@ if (ENABLE_SDL2 AND ENABLE_SDL2_FRONTEND)
 endif()
 
 if (ENABLE_QT)
-    add_subdirectory(citra_qt)
+    add_subdirectory(mandarine_qt)
 endif()
 
 if (ENABLE_DEDICATED_ROOM)
