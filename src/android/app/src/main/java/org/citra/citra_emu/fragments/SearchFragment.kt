@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import info.debatty.java.stringsimilarity.Jaccard
 import info.debatty.java.stringsimilarity.JaroWinkler
 import kotlinx.coroutines.launch
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import org.citra.citra_emu.adapters.GameAdapter
 import org.citra.citra_emu.databinding.FragmentSearchBinding
@@ -65,7 +65,7 @@ class SearchFragment : Fragment() {
         homeViewModel.setNavigationVisibility(visible = true, animated = true)
         homeViewModel.setStatusBarShadeVisibility(visible = true)
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        preferences = PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
 
         if (savedInstanceState != null) {
             binding.searchText.setText(savedInstanceState.getString(SEARCH_TEXT))

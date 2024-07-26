@@ -12,7 +12,7 @@ import androidx.core.graphics.drawable.toBitmap
 import coil.executeBlocking
 import coil.imageLoader
 import coil.request.ImageRequest
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.NativeLibrary
 
 // Used in native code.
@@ -53,7 +53,7 @@ object StillImageCameraHelper {
     @Keep
     @JvmStatic
     fun LoadImageFromFile(uri: String?, width: Int, height: Int): Bitmap? {
-        val context = CitraApplication.appContext
+        val context = MandarineApplication.appContext
         val request = ImageRequest.Builder(context)
             .data(uri)
             .size(width, height)

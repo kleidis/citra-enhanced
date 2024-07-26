@@ -12,7 +12,7 @@ import android.provider.DocumentsContract
 import android.system.Os
 import android.util.Pair
 import androidx.documentfile.provider.DocumentFile
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.model.CheapDocument
 import java.io.BufferedInputStream
 import java.io.File
@@ -31,7 +31,7 @@ object FileUtil {
     const val APPLICATION_OCTET_STREAM = "application/octet-stream"
     const val TEXT_PLAIN = "text/plain"
 
-    val context: Context get() = CitraApplication.appContext
+    val context: Context get() = MandarineApplication.appContext
 
     /**
      * Create a file from directory with filename.
@@ -576,19 +576,19 @@ object FileUtil {
         }
 
     fun DocumentFile.inputStream(): InputStream =
-        CitraApplication.appContext.contentResolver.openInputStream(uri)!!
+        MandarineApplication.appContext.contentResolver.openInputStream(uri)!!
 
     fun DocumentFile.outputStream(): OutputStream =
-        CitraApplication.appContext.contentResolver.openOutputStream(uri)!!
+        MandarineApplication.appContext.contentResolver.openOutputStream(uri)!!
 
     fun Uri.inputStream(): InputStream =
-        CitraApplication.appContext.contentResolver.openInputStream(this)!!
+        MandarineApplication.appContext.contentResolver.openInputStream(this)!!
 
     fun Uri.outputStream(): OutputStream =
-        CitraApplication.appContext.contentResolver.openOutputStream(this)!!
+        MandarineApplication.appContext.contentResolver.openOutputStream(this)!!
 
     fun Uri.asDocumentFile(): DocumentFile? =
-        DocumentFile.fromSingleUri(CitraApplication.appContext, this)
+        DocumentFile.fromSingleUri(MandarineApplication.appContext, this)
 
     interface CopyDirListener {
         fun onSearchProgress(directoryName: String)

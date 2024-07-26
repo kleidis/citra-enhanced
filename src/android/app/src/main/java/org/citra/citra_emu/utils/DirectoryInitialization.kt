@@ -6,35 +6,35 @@ package org.citra.citra_emu.utils
 
 import android.content.Context
 import android.net.Uri
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.NativeLibrary
 import org.citra.citra_emu.utils.PermissionsHandler.hasWriteAccess
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A service that spawns its own thread in order to copy several binary and shader files
- * from the Citra APK to the external file system.
+ * from the Mandarine APK to the external file system.
  */
 object DirectoryInitialization {
     @Volatile
     private var directoryState: DirectoryInitializationState? = null
     var userPath: String? = null
     val internalUserPath
-        get() = CitraApplication.appContext.getExternalFilesDir(null)!!.canonicalPath
-    private val isCitraDirectoryInitializationRunning = AtomicBoolean(false)
+        get() = MandarineApplication.appContext.getExternalFilesDir(null)!!.canonicalPath
+    private val isMandarineDirectoryInitializationRunning = AtomicBoolean(false)
 
-    val context: Context get() = CitraApplication.appContext
+    val context: Context get() = MandarineApplication.appContext
 
     @JvmStatic
     fun start(): DirectoryInitializationState? {
-        if (!isCitraDirectoryInitializationRunning.compareAndSet(false, true)) {
+        if (!isMandarineDirectoryInitializationRunning.compareAndSet(false, true)) {
             return null
         }
 
         if (directoryState != DirectoryInitializationState.CITRA_DIRECTORIES_INITIALIZED) {
             directoryState = if (hasWriteAccess(context)) {
-                if (setCitraUserDirectory()) {
-                    CitraApplication.documentsTree.setRoot(Uri.parse(userPath))
+                if (setMandarineUserDirectory()) {
+                    MandarineApplication.documentsTree.setRoot(Uri.parse(userPath))
                     NativeLibrary.createLogFile()
                     NativeLibrary.logUserDirectory(userPath.toString())
                     NativeLibrary.createConfigFile()
@@ -47,18 +47,18 @@ object DirectoryInitialization {
                 DirectoryInitializationState.EXTERNAL_STORAGE_PERMISSION_NEEDED
             }
         }
-        isCitraDirectoryInitializationRunning.set(false)
+        isMandarineDirectoryInitializationRunning.set(false)
         return directoryState
     }
 
     @JvmStatic
-    fun areCitraDirectoriesReady(): Boolean {
+    fun areMandarineDirectoriesReady(): Boolean {
         return directoryState == DirectoryInitializationState.CITRA_DIRECTORIES_INITIALIZED
     }
 
-    fun resetCitraDirectoryState() {
+    fun resetMandarineDirectoryState() {
         directoryState = null
-        isCitraDirectoryInitializationRunning.compareAndSet(true, false)
+        isMandarineDirectoryInitializationRunning.compareAndSet(true, false)
     }
 
     val userDirectory: String?
@@ -66,17 +66,17 @@ object DirectoryInitialization {
             checkNotNull(directoryState) {
                 "DirectoryInitialization has to run at least once!"
             }
-            check(!isCitraDirectoryInitializationRunning.get()) {
+            check(!isMandarineDirectoryInitializationRunning.get()) {
                 "DirectoryInitialization has to finish running first!"
             }
             return userPath
         }
 
-    fun setCitraUserDirectory(): Boolean {
+    fun setMandarineUserDirectory(): Boolean {
         val dataPath = PermissionsHandler.citraDirectory
         if (dataPath.toString().isNotEmpty()) {
             userPath = dataPath.toString()
-            android.util.Log.d("[Citra Frontend]", "[DirectoryInitialization] User Dir: $userPath")
+            android.util.Log.d("[Mandarine Frontend]", "[DirectoryInitialization] User Dir: $userPath")
             return true
         }
         return false

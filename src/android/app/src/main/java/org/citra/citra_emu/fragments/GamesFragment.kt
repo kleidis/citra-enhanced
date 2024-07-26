@@ -25,7 +25,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import org.citra.citra_emu.adapters.GameAdapter
 import org.citra.citra_emu.databinding.FragmentGamesBinding
@@ -148,7 +148,7 @@ class GamesFragment : Fragment() {
     }
 
     private fun setAdapter(games: List<Game>) {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
         if (preferences.getBoolean(Settings.PREF_SHOW_HOME_APPS, false)) {
             (binding.gridGames.adapter as GameAdapter).submitList(games)
         } else {

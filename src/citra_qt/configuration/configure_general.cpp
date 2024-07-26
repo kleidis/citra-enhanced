@@ -159,8 +159,8 @@ void ConfigureGeneral::SetConfiguration() {
 
 void ConfigureGeneral::ResetDefaults() {
     QMessageBox::StandardButton answer = QMessageBox::question(
-        this, tr("Citra"),
-        tr("Are you sure you want to <b>reset your settings</b> and close Citra?"),
+        this, tr("Mandarine"),
+        tr("Are you sure you want to <b>reset your settings</b> and close Mandarine?"),
         QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
     if (answer == QMessageBox::No) {

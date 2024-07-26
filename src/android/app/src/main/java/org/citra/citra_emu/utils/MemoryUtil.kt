@@ -6,13 +6,13 @@ package org.citra.citra_emu.utils
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import java.util.Locale
 import kotlin.math.ceil
 
 object MemoryUtil {
-    private val context get() = CitraApplication.appContext
+    private val context get() = MandarineApplication.appContext
 
     private val Float.hundredths: String
         get() = String.format(Locale.ROOT, "%.2f", this)

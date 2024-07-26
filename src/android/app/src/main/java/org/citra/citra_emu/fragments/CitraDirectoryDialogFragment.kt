@@ -15,13 +15,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.citra.citra_emu.R
-import org.citra.citra_emu.databinding.DialogCitraDirectoryBinding
+import org.citra.citra_emu.databinding.DialogMandarineDirectoryBinding
 import org.citra.citra_emu.ui.main.MainActivity
 import org.citra.citra_emu.utils.PermissionsHandler
 import org.citra.citra_emu.viewmodel.HomeViewModel
 
-class CitraDirectoryDialogFragment : DialogFragment() {
-    private lateinit var binding: DialogCitraDirectoryBinding
+class MandarineDirectoryDialogFragment : DialogFragment() {
+    private lateinit var binding: DialogMandarineDirectoryBinding
 
     private val homeViewModel: HomeViewModel by activityViewModels()
 
@@ -30,7 +30,7 @@ class CitraDirectoryDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogCitraDirectoryBinding.inflate(layoutInflater)
+        binding = DialogMandarineDirectoryBinding.inflate(layoutInflater)
 
         val path = Uri.parse(requireArguments().getString(PATH))
 
@@ -60,7 +60,7 @@ class CitraDirectoryDialogFragment : DialogFragment() {
             }
             .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
                 if (!PermissionsHandler.hasWriteAccess(requireContext())) {
-                    (requireActivity() as MainActivity).openCitraDirectory.launch(null)
+                    (requireActivity() as MainActivity).openMandarineDirectory.launch(null)
                 }
             }
             .show()
@@ -80,8 +80,8 @@ class CitraDirectoryDialogFragment : DialogFragment() {
             activity: FragmentActivity,
             path: String,
             listener: Listener
-        ): CitraDirectoryDialogFragment {
-            val dialog = CitraDirectoryDialogFragment()
+        ): MandarineDirectoryDialogFragment {
+            val dialog = MandarineDirectoryDialogFragment()
             ViewModelProvider(activity)[HomeViewModel::class.java].directoryListener = listener
             val args = Bundle()
             args.putString(PATH, path)

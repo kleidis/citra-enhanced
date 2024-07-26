@@ -23,11 +23,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import org.citra.citra_emu.databinding.DialogCopyDirBinding
 import org.citra.citra_emu.model.SetupCallback
-import org.citra.citra_emu.utils.CitraDirectoryHelper
+import org.citra.citra_emu.utils.MandarineDirectoryHelper
 import org.citra.citra_emu.utils.FileUtil
 import org.citra.citra_emu.utils.PermissionsHandler
 import org.citra.citra_emu.viewmodel.HomeViewModel
@@ -125,14 +125,14 @@ class CopyDirProgressDialog : DialogFragment() {
                         object : FileUtil.CopyDirListener {
                             override fun onSearchProgress(directoryName: String) {
                                 viewModel.onUpdateSearchProgress(
-                                    CitraApplication.appContext.resources,
+                                    MandarineApplication.appContext.resources,
                                     directoryName
                                 )
                             }
 
                             override fun onCopyProgress(filename: String, progress: Int, max: Int) {
                                 viewModel.onUpdateCopyProgress(
-                                    CitraApplication.appContext.resources,
+                                    MandarineApplication.appContext.resources,
                                     filename,
                                     progress,
                                     max
@@ -140,7 +140,7 @@ class CopyDirProgressDialog : DialogFragment() {
                             }
 
                             override fun onComplete() {
-                                CitraDirectoryHelper.initializeCitraDirectory(path)
+                                MandarineDirectoryHelper.initializeMandarineDirectory(path)
                                 callback?.onStepCompleted()
                                 viewModel.setCopyComplete(true)
                             }

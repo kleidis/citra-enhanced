@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.preference.PreferenceManager
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import org.citra.citra_emu.features.settings.model.Settings
 import org.citra.citra_emu.ui.main.ThemeProvider
@@ -23,14 +23,14 @@ object ThemeUtil {
     const val SYSTEM_BAR_ALPHA = 0.9f
 
     private val preferences: SharedPreferences get() =
-        PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
 
     fun setTheme(activity: AppCompatActivity) {
         setThemeMode(activity)
         if (preferences.getBoolean(Settings.PREF_MATERIAL_YOU, false)) {
-            activity.setTheme(R.style.Theme_Citra_Main_MaterialYou)
+            activity.setTheme(R.style.Theme_Mandarine_Main_MaterialYou)
         } else {
-            activity.setTheme(R.style.Theme_Citra_Main)
+            activity.setTheme(R.style.Theme_Mandarine_Main)
         }
 
         // Using a specific night mode check because this could apply incorrectly when using the
@@ -39,7 +39,7 @@ object ThemeUtil {
         if (preferences.getBoolean(Settings.PREF_BLACK_BACKGROUNDS, false) &&
             isNightMode(activity)
         ) {
-            activity.setTheme(R.style.ThemeOverlay_Citra_Dark)
+            activity.setTheme(R.style.ThemeOverlay_Mandarine_Dark)
         }
     }
 

@@ -7,7 +7,7 @@ package org.citra.citra_emu.utils
 import android.net.Uri
 import android.os.Build
 import androidx.documentfile.provider.DocumentFile
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.NativeLibrary
 import org.citra.citra_emu.utils.FileUtil.asDocumentFile
 import org.citra.citra_emu.utils.FileUtil.inputStream
@@ -30,7 +30,7 @@ object GpuDriverHelper {
         get() {
             // Bypass directory initialization checks
             val root = DocumentFile.fromTreeUri(
-                CitraApplication.appContext,
+                MandarineApplication.appContext,
                 Uri.parse(DirectoryInitialization.userPath)
             )!!
             var driverDirectory = root.findFile("gpu_drivers")
@@ -47,7 +47,7 @@ object GpuDriverHelper {
                 DirectoryInitialization.internalUserPath + "/gpu/vk_file_redirect/"
 
             // Initialize the driver installation directory.
-            driverInstallationPath = CitraApplication.appContext
+            driverInstallationPath = MandarineApplication.appContext
                 .filesDir.canonicalPath + "/gpu_driver/"
         } catch (e: IOException) {
             throw RuntimeException(e)
@@ -57,7 +57,7 @@ object GpuDriverHelper {
         initializeDirectories()
 
         // Initialize hook libraries directory.
-        hookLibPath = CitraApplication.appContext.applicationInfo.nativeLibraryDir + "/"
+        hookLibPath = MandarineApplication.appContext.applicationInfo.nativeLibraryDir + "/"
 
         // Initialize GPU driver.
         NativeLibrary.initializeGpuDriver(

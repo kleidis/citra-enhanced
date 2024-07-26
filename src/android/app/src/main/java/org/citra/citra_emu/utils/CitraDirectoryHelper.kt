@@ -8,20 +8,20 @@ import android.content.Intent
 import android.net.Uri
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import org.citra.citra_emu.fragments.CitraDirectoryDialogFragment
+import org.citra.citra_emu.fragments.MandarineDirectoryDialogFragment
 import org.citra.citra_emu.fragments.CopyDirProgressDialog
 import org.citra.citra_emu.model.SetupCallback
 import org.citra.citra_emu.viewmodel.HomeViewModel
 
 /**
- * Citra directory initialization ui flow controller.
+ * Mandarine directory initialization ui flow controller.
  */
-class CitraDirectoryHelper(private val fragmentActivity: FragmentActivity) {
-    fun showCitraDirectoryDialog(result: Uri, callback: SetupCallback? = null) {
-        val citraDirectoryDialog = CitraDirectoryDialogFragment.newInstance(
+class MandarineDirectoryHelper(private val fragmentActivity: FragmentActivity) {
+    fun showMandarineDirectoryDialog(result: Uri, callback: SetupCallback? = null) {
+        val citraDirectoryDialog = MandarineDirectoryDialogFragment.newInstance(
             fragmentActivity,
             result.toString(),
-            CitraDirectoryDialogFragment.Listener { moveData: Boolean, path: Uri ->
+            MandarineDirectoryDialogFragment.Listener { moveData: Boolean, path: Uri ->
                 val previous = PermissionsHandler.citraDirectory
                 // Do noting if user select the previous path.
                 if (path == previous) {
@@ -35,7 +35,7 @@ class CitraDirectoryHelper(private val fragmentActivity: FragmentActivity) {
                     takeFlags
                 )
                 if (!moveData || previous.toString().isEmpty()) {
-                    initializeCitraDirectory(path)
+                    initializeMandarineDirectory(path)
                     callback?.onStepCompleted()
                     val viewModel = ViewModelProvider(fragmentActivity)[HomeViewModel::class.java]
                     viewModel.setUserDir(fragmentActivity, path.path!!)
@@ -49,14 +49,14 @@ class CitraDirectoryHelper(private val fragmentActivity: FragmentActivity) {
             })
         citraDirectoryDialog.show(
             fragmentActivity.supportFragmentManager,
-            CitraDirectoryDialogFragment.TAG
+            MandarineDirectoryDialogFragment.TAG
         )
     }
 
     companion object {
-        fun initializeCitraDirectory(path: Uri) {
-            PermissionsHandler.setCitraDirectory(path.toString())
-            DirectoryInitialization.resetCitraDirectoryState()
+        fun initializeMandarineDirectory(path: Uri) {
+            PermissionsHandler.setMandarineDirectory(path.toString())
+            DirectoryInitialization.resetMandarineDirectoryState()
             DirectoryInitialization.start()
         }
     }

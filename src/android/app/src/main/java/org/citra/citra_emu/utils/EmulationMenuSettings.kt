@@ -6,12 +6,12 @@ package org.citra.citra_emu.utils
 
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.display.ScreenLayout
 
 object EmulationMenuSettings {
     private val preferences =
-        PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
 
     var joystickRelCenter: Boolean
         get() = preferences.getBoolean("EmulationMenuSettings_JoystickRelCenter", true)

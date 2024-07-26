@@ -7,7 +7,7 @@ package org.citra.citra_emu.features.settings.utils
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import org.citra.citra_emu.features.settings.model.AbstractSetting
 import org.citra.citra_emu.features.settings.model.BooleanSetting
@@ -55,7 +55,7 @@ object SettingsFile {
         val sections: HashMap<String, SettingSection?> = SettingsSectionMap()
         var reader: BufferedReader? = null
         try {
-            val context: Context = CitraApplication.appContext
+            val context: Context = MandarineApplication.appContext
             val inputStream = context.contentResolver.openInputStream(ini.uri)
             reader = BufferedReader(InputStreamReader(inputStream))
             var current: SettingSection? = null
@@ -125,7 +125,7 @@ object SettingsFile {
     ) {
         val ini = getSettingsFile(fileName)
         try {
-            val context: Context = CitraApplication.appContext
+            val context: Context = MandarineApplication.appContext
             val inputStream = context.contentResolver.openInputStream(ini.uri)
             val writer = Wini(inputStream)
             val keySet: Set<String> = sections.keys
@@ -141,7 +141,7 @@ object SettingsFile {
         } catch (e: Exception) {
             Log.error("[SettingsFile] File not found: $fileName.ini: ${e.message}")
             view.showToastMessage(
-                CitraApplication.appContext
+                MandarineApplication.appContext
                     .getString(R.string.error_saving, fileName, e.message), false
             )
         }
@@ -153,7 +153,7 @@ object SettingsFile {
     ) {
         val ini = getSettingsFile(fileName)
         try {
-            val context: Context = CitraApplication.appContext
+            val context: Context = MandarineApplication.appContext
             val inputStream = context.contentResolver.openInputStream(ini.uri)
             val writer = Wini(inputStream)
             writer.put(setting.section, setting.key, setting.valueAsString)
@@ -184,13 +184,13 @@ object SettingsFile {
     }
 
     fun getSettingsFile(fileName: String): DocumentFile {
-        val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(userDirectory))
+        val root = DocumentFile.fromTreeUri(MandarineApplication.appContext, Uri.parse(userDirectory))
         val configDirectory = root!!.findFile("config")
         return configDirectory!!.findFile("$fileName.ini")!!
     }
 
     private fun getCustomGameSettingsFile(gameId: String): DocumentFile {
-        val root = DocumentFile.fromTreeUri(CitraApplication.appContext, Uri.parse(userDirectory))
+        val root = DocumentFile.fromTreeUri(MandarineApplication.appContext, Uri.parse(userDirectory))
         val configDirectory = root!!.findFile("GameSettings")
         return configDirectory!!.findFile("$gameId.ini")!!
     }

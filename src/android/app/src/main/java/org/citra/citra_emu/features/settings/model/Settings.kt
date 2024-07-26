@@ -5,7 +5,7 @@
 package org.citra.citra_emu.features.settings.model
 
 import android.text.TextUtils
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import org.citra.citra_emu.features.settings.ui.SettingsActivityView
 import org.citra.citra_emu.features.settings.utils.SettingsFile
@@ -42,14 +42,14 @@ class Settings {
 
     fun loadSettings(view: SettingsActivityView? = null) {
         sections = SettingsSectionMap()
-        loadCitraSettings(view)
+        loadMandarineSettings(view)
         if (!TextUtils.isEmpty(gameId)) {
             loadCustomGameSettings(gameId!!, view)
         }
         isLoaded = true
     }
 
-    private fun loadCitraSettings(view: SettingsActivityView?) {
+    private fun loadMandarineSettings(view: SettingsActivityView?) {
         for ((fileName) in configFileSectionsMap) {
             sections.putAll(SettingsFile.readFile(fileName, view))
         }
@@ -79,7 +79,7 @@ class Settings {
     fun saveSettings(view: SettingsActivityView) {
         if (TextUtils.isEmpty(gameId)) {
             view.showToastMessage(
-                CitraApplication.appContext.getString(R.string.ini_saved),
+                MandarineApplication.appContext.getString(R.string.ini_saved),
                 false
             )
             for ((fileName, sectionNames) in configFileSectionsMap.entries) {

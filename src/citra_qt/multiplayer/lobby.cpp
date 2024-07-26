@@ -58,7 +58,7 @@ Lobby::Lobby(Core::System& system_, QWidget* parent, QStandardItemModel* list,
     ui->nickname->setValidator(validation.GetNickname());
     ui->nickname->setText(UISettings::values.nickname);
     if (ui->nickname->text().isEmpty() && !NetSettings::values.citra_username.empty()) {
-        // Use Citra Web Service user name as nickname by default
+        // Use Mandarine Web Service user name as nickname by default
         ui->nickname->setText(QString::fromStdString(NetSettings::values.citra_username));
     }
 

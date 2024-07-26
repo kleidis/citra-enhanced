@@ -29,7 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import org.citra.citra_emu.HomeNavigationDirections
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.R
 import org.citra.citra_emu.adapters.GameAdapter.GameViewHolder
 import org.citra.citra_emu.databinding.CardGameBinding
@@ -77,7 +77,7 @@ class GameAdapter(private val activity: AppCompatActivity, private val inflater:
         gameExists(holder)
 
         val preferences =
-            PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+            PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
         preferences.edit()
             .putLong(
                 holder.game.keyLastPlayedTime,
@@ -118,12 +118,12 @@ class GameAdapter(private val activity: AppCompatActivity, private val inflater:
         }
 
         val gameExists = DocumentFile.fromSingleUri(
-            CitraApplication.appContext,
+            MandarineApplication.appContext,
             Uri.parse(holder.game.path)
         )?.exists() == true
         return if (!gameExists) {
             Toast.makeText(
-                CitraApplication.appContext,
+                MandarineApplication.appContext,
                 R.string.loader_error_file_not_found,
                 Toast.LENGTH_LONG
             ).show()

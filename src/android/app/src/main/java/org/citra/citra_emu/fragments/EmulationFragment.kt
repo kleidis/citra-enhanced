@@ -43,7 +43,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.EmulationNavigationDirections
 import org.citra.citra_emu.NativeLibrary
 import org.citra.citra_emu.R
@@ -71,7 +71,7 @@ import java.io.File
 
 class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.FrameCallback {
     private val preferences: SharedPreferences
-        get() = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        get() = PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
 
     private lateinit var emulationState: EmulationState
     private var perfStatsUpdater: Runnable? = null
@@ -439,10 +439,10 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
             return
         }
 
-        if (DirectoryInitialization.areCitraDirectoriesReady()) {
+        if (DirectoryInitialization.areMandarineDirectoriesReady()) {
             emulationState.run(emulationActivity.isActivityRecreated)
         } else {
-            setupCitraDirectoriesThenStartEmulation()
+            setupMandarineDirectoriesThenStartEmulation()
         }
     }
 
@@ -459,7 +459,7 @@ class EmulationFragment : Fragment(), SurfaceHolder.Callback, Choreographer.Fram
         super.onDetach()
     }
 
-    private fun setupCitraDirectoriesThenStartEmulation() {
+    private fun setupMandarineDirectoriesThenStartEmulation() {
         val directoryInitializationState = DirectoryInitialization.start()
         if (directoryInitializationState ===
             DirectoryInitializationState.CITRA_DIRECTORIES_INITIALIZED

@@ -26,7 +26,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.HomeNavigationDirections
 import org.citra.citra_emu.R
 import org.citra.citra_emu.adapters.HomeSettingAdapter
@@ -56,7 +56,7 @@ class HomeSettingsFragment : Fragment() {
     private val driverViewModel: DriverViewModel by activityViewModels()
 
     private val preferences get() =
-        PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,7 +159,7 @@ class HomeSettingsFragment : Fragment() {
                 R.string.select_citra_user_folder,
                 R.string.select_citra_user_folder_home_description,
                 R.drawable.ic_home,
-                { mainActivity.openCitraDirectory.launch(null) },
+                { mainActivity.openMandarineDirectory.launch(null) },
                 details = homeViewModel.userDir
             ),
             HomeSetting(
@@ -232,7 +232,7 @@ class HomeSettingsFragment : Fragment() {
                 .apply()
 
             Toast.makeText(
-                CitraApplication.appContext,
+                MandarineApplication.appContext,
                 R.string.games_dir_selected,
                 Toast.LENGTH_LONG
             ).show()

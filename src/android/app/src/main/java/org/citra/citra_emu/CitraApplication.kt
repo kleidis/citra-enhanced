@@ -16,7 +16,7 @@ import org.citra.citra_emu.utils.PermissionsHandler
 import org.citra.citra_emu.utils.Log
 import org.citra.citra_emu.utils.MemoryUtil
 
-class CitraApplication : Application() {
+class MandarineApplication : Application() {
     private fun createNotificationChannel() {
         with(getSystemService(NotificationManager::class.java)) {
             // General notification
@@ -70,7 +70,7 @@ class CitraApplication : Application() {
     }
 
     companion object {
-        private var application: CitraApplication? = null
+        private var application: MandarineApplication? = null
 
         val appContext: Context get() = application!!.applicationContext
 

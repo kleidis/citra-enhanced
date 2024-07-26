@@ -7,7 +7,7 @@ package org.citra.citra_emu.applets
 import android.text.InputFilter
 import android.text.Spanned
 import androidx.annotation.Keep
-import org.citra.citra_emu.CitraApplication.Companion.appContext
+import org.citra.citra_emu.MandarineApplication.Companion.appContext
 import org.citra.citra_emu.NativeLibrary
 import org.citra.citra_emu.R
 import org.citra.citra_emu.fragments.KeyboardDialogFragment

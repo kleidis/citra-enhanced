@@ -6,7 +6,7 @@ package org.citra.citra_emu.features.settings.ui.viewholder
 
 import android.view.View
 import androidx.preference.PreferenceManager
-import org.citra.citra_emu.CitraApplication
+import org.citra.citra_emu.MandarineApplication
 import org.citra.citra_emu.databinding.ListItemSettingBinding
 import org.citra.citra_emu.features.settings.model.view.InputBindingSetting
 import org.citra.citra_emu.features.settings.model.view.SettingsItem
@@ -17,7 +17,7 @@ class InputBindingSettingViewHolder(val binding: ListItemSettingBinding, adapter
     private lateinit var setting: InputBindingSetting
 
     override fun bind(item: SettingsItem) {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(CitraApplication.appContext)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(MandarineApplication.appContext)
         setting = item as InputBindingSetting
         binding.textSettingName.setText(item.nameId)
         val uiString = preferences.getString(setting.abstractSetting.key, "")!!

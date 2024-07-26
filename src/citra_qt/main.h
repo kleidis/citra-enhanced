@@ -250,7 +250,7 @@ private slots:
     void OnConfigure();
     void OnLoadAmiibo();
     void OnRemoveAmiibo();
-    void OnOpenCitraFolder();
+    void OnOpenMandarineFolder();
     void OnToggleFilterBar();
     void OnDisplayTitleBars(bool);
     void InitializeHotkeys();
@@ -280,8 +280,8 @@ private slots:
     void StartVideoDumping(const QString& path);
     void OnStopVideoDumping();
     void OnCoreError(Core::System::ResultStatus, std::string);
-    /// Called whenever a user selects Help->About Citra
-    void OnMenuAboutCitra();
+    /// Called whenever a user selects Help->About Mandarine
+    void OnMenuAboutMandarine();
 
 #if ENABLE_QT_UPDATER
     void OnUpdateFound(bool found, bool error);
@@ -344,7 +344,7 @@ private:
     MultiplayerState* multiplayer_state = nullptr;
     std::unique_ptr<Config> config;
 
-    // Whether emulation is currently running in Citra.
+    // Whether emulation is currently running in Mandarine.
     bool emulation_running = false;
     std::unique_ptr<EmuThread> emu_thread;
     // The title of the game currently running
