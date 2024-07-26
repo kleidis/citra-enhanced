@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
  * A cached document tree for Mandarine user directory.
  * For every filepath which is not startsWith "content://" will need to use this class to traverse.
  * For example:
- * C++ Mandarine log file directory will be /log/citra_log.txt.
+ * C++ Mandarine log file directory will be /log/mandarine_log.txt.
  * After DocumentsTree.resolvePath() it will become content URI.
  */
 class DocumentsTree {

@@ -26,10 +26,10 @@
     <string name="select_games_folder">Sélectionner le dossier des jeux</string>
     <string name="select_games_folder_description">Permet à Mandarine de remplir la liste des jeux</string>
     <string name="about">À propos</string>
-    <string name="citra_description">Un émulateur 3DS open-source</string>
+    <string name="mandarine_description">Un émulateur 3DS open-source</string>
     <string name="about_description">Numéro de build, crédits et plus encore</string>
     <string name="games_dir_selected">Répertoire de jeux sélectionné</string>
-    <string name="select_citra_user_folder_home_description">Modifie les fichiers que Mandarine utilise pour charger les jeux</string>
+    <string name="select_mandarine_user_folder_home_description">Modifie les fichiers que Mandarine utilise pour charger les jeux</string>
     <string name="theme_and_color_description">Modifier l\'apparence de l\'application</string>
     <string name="install_cia_title">Installer un CIA</string>
 
@@ -48,13 +48,13 @@
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
     <string name="contributors">Contributeurs</string>
     <string name="contributors_description">Fait avec \u2764 de l\'équipe yuzu</string>
-    <string name="contributors_link">https://github.com/citra-emu/citra/graphs/contributors</string>
+    <string name="contributors_link">https://github.com/mandarine3ds/mandarine/graphs/contributors</string>
     <string name="licenses_description">Projets qui rendent Mandarine pour Android possible</string>
     <string name="build">Build</string>
     <string name="licenses">Licences</string>
     <string name="support_link">https://discord.gg/FAXfZV9</string>
     <string name="website_link">https://citra-emu.org/</string>
-    <string name="github_link">https://github.com/citra-emu</string>
+    <string name="github_link">https://github.com/mandarine3ds</string>
 
     <!-- Setup strings -->
     <string name="welcome">Bienvenue !</string>
@@ -83,9 +83,9 @@
     <string name="warning_help">Aide</string>
     <string name="warning_skip">Sauter</string>
     <string name="warning_cancel">Annuler</string>
-    <string name="select_citra_user_folder">Sélectionnez le dossier utilisateur
+    <string name="select_mandarine_user_folder">Sélectionnez le dossier utilisateur
  </string>
-    <string name="select_citra_user_folder_description"><![CDATA[Sélectionnez votre <a href=\"https://github.com/citra-emu/citra/wiki/Citra-Android-user-data-and-storage\">répertoire de données utilisateur</a> avec le bouton ci-dessous.]]></string>
+    <string name="select_mandarine_user_folder_description"><![CDATA[Sélectionnez votre <a href=\"https://github.com/citra-emu/citra/wiki/Citra-Android-user-data-and-storage\">répertoire de données utilisateur</a> avec le bouton ci-dessous.]]></string>
     <string name="select">Sélectionner</string>
     <string name="cannot_skip">Vous ne pouvez pas sauter cette étape</string>
     <string name="cannot_skip_directory_description">Cette étape est nécessaire pour permettre à Mandarine de fonctionner. Veuillez sélectionner un répertoire, puis vous pourrez continuer.</string>

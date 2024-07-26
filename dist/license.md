@@ -41,4 +41,4 @@ qt_themes/colorful/icons/48x48/sd_card.png | CC BY-ND 3.0 | https://icons8.com
 qt_themes/colorful/icons/48x48/star.png | CC BY-ND 3.0 | https://icons8.com
 qt_themes/colorful_dark/icons/16x16/connected.png | CC BY-ND 3.0 | https://icons8.com
 
-<!-- TODO (B3N30): Add the license of the citra icon -->
+<!-- TODO (B3N30): Add the license of the mandarine icon -->

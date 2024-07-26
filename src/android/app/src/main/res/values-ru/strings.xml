@@ -26,10 +26,10 @@
     <string name="select_games_folder">Выбор папки с играми</string>
     <string name="select_games_folder_description">Позволяет Mandarine формировать список игр</string>
     <string name="about">О приложении</string>
-    <string name="citra_description">Эмулятор 3DS с открытым исходным кодом</string>
+    <string name="mandarine_description">Эмулятор 3DS с открытым исходным кодом</string>
     <string name="about_description">Версия сборки, разработчики и другое</string>
     <string name="games_dir_selected">Папка с играми выбрана</string>
-    <string name="select_citra_user_folder_home_description">Изменение файлов, используемых Mandarine для запуска игр</string>
+    <string name="select_mandarine_user_folder_home_description">Изменение файлов, используемых Mandarine для запуска игр</string>
     <string name="theme_and_color_description">Настройка внешнего вида приложения</string>
     <string name="install_cia_title">Установить CIA</string>
 
@@ -48,13 +48,13 @@
     <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
     <string name="contributors">Участники</string>
     <string name="contributors_description">Создано с \u2764 от команды Mandarine</string>
-    <string name="contributors_link">https://github.com/citra-emu/citra/graphs/contributors</string>
+    <string name="contributors_link">https://github.com/mandarine3ds/mandarine/graphs/contributors</string>
     <string name="licenses_description">Проекты, которые сделали возможным Mandarine для Android</string>
     <string name="build">Сборка</string>
     <string name="licenses">Лицензии</string>
     <string name="support_link">https://discord.gg/FAXfZV9</string>
     <string name="website_link">https://citra-emu.org/</string>
-    <string name="github_link">https://github.com/citra-emu</string>
+    <string name="github_link">https://github.com/mandarine3ds</string>
 
     <!-- Setup strings -->
     <string name="welcome">Добро пожаловать!</string>
@@ -83,8 +83,8 @@
     <string name="warning_help">Помощь</string>
     <string name="warning_skip">Пропустить</string>
     <string name="warning_cancel">Отмена</string>
-    <string name="select_citra_user_folder">Выбор папки пользователя</string>
-    <string name="select_citra_user_folder_description"><![CDATA[С помощью кнопки внизу выберите <a href=\"https://github.com/citra-emu/citra/wiki/Citra-Android-user-data-and-storage\">папку пользователя</a>.]]></string>
+    <string name="select_mandarine_user_folder">Выбор папки пользователя</string>
+    <string name="select_mandarine_user_folder_description"><![CDATA[С помощью кнопки внизу выберите <a href=\"https://github.com/citra-emu/citra/wiki/Citra-Android-user-data-and-storage\">папку пользователя</a>.]]></string>
     <string name="select">Выбрать</string>
     <string name="cannot_skip">Вы не можете пропустить данное действие</string>
     <string name="cannot_skip_directory_description">Данный шаг требуется для работы Mandarine. Пожалуйста, укажите папку, чтобы продолжить.</string>

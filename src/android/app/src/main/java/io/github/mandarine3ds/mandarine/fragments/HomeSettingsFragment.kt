@@ -156,8 +156,8 @@ class HomeSettingsFragment : Fragment() {
                 driverViewModel.selectedDriverMetadata
             ),
             HomeSetting(
-                R.string.select_citra_user_folder,
-                R.string.select_citra_user_folder_home_description,
+                R.string.select_mandarine_user_folder,
+                R.string.select_mandarine_user_folder_home_description,
                 R.drawable.ic_home,
                 { mainActivity.openMandarineDirectory.launch(null) },
                 details = homeViewModel.userDir
@@ -243,10 +243,10 @@ class HomeSettingsFragment : Fragment() {
     private fun shareLog() {
         val logDirectory = DocumentFile.fromTreeUri(
             requireContext(),
-            PermissionsHandler.citraDirectory
+            PermissionsHandler.mandarineDirectory
         )?.findFile("log")
-        val currentLog = logDirectory?.findFile("citra_log.txt")
-        val oldLog = logDirectory?.findFile("citra_log.txt.old.txt")
+        val currentLog = logDirectory?.findFile("mandarine_log.txt")
+        val oldLog = logDirectory?.findFile("mandarine_log.txt.old.txt")
 
         val intent = Intent().apply {
             action = Intent.ACTION_SEND

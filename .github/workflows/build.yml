@@ -1,4 +1,4 @@
-name: citra-build
+name: mandarine-build
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
       matrix:
         target: ["appimage", "fresh"]
     container:
-      image: pablomk7/build-environments:linux-${{ matrix.target }}
+      image: mandarine3ds/build-environments:linux-${{ matrix.target }}
       options: -u 1001
     env:
       CCACHE_DIR: ${{ github.workspace }}/.ccache

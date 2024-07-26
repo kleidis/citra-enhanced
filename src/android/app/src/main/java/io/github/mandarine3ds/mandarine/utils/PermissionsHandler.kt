@@ -19,11 +19,11 @@ object PermissionsHandler {
 
     fun hasWriteAccess(context: Context): Boolean {
         try {
-            if (citraDirectory.toString().isEmpty()) {
+            if (mandarineDirectory.toString().isEmpty()) {
                 return false
             }
 
-            val uri = citraDirectory
+            val uri = mandarineDirectory
             val takeFlags =
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             context.contentResolver.takePersistableUriPermission(uri, takeFlags)
@@ -34,12 +34,12 @@ object PermissionsHandler {
 
             context.contentResolver.releasePersistableUriPermission(uri, takeFlags)
         } catch (e: Exception) {
-            Log.error("[PermissionsHandler]: Cannot check citra data directory permission, error: " + e.message)
+            Log.error("[PermissionsHandler]: Cannot check mandarine data directory permission, error: " + e.message)
         }
         return false
     }
 
-    val citraDirectory: Uri
+    val mandarineDirectory: Uri
         get() {
             val directoryString = preferences.getString(MANDARINE_DIRECTORY, "")
             return Uri.parse(directoryString)

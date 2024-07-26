@@ -79,7 +79,7 @@ class CopyDirProgressDialog : DialogFragment() {
                         if (it) {
                             homeViewModel.setUserDir(
                                 requireActivity(),
-                                PermissionsHandler.citraDirectory.path!!
+                                PermissionsHandler.mandarineDirectory.path!!
                             )
                             homeViewModel.copyInProgress = false
                             homeViewModel.setPickingUserDir(false)

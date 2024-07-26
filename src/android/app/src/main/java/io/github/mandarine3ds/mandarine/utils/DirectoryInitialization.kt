@@ -73,7 +73,7 @@ object DirectoryInitialization {
         }
 
     fun setMandarineUserDirectory(): Boolean {
-        val dataPath = PermissionsHandler.citraDirectory
+        val dataPath = PermissionsHandler.mandarineDirectory
         if (dataPath.toString().isNotEmpty()) {
             userPath = dataPath.toString()
             android.util.Log.d("[Mandarine Frontend]", "[DirectoryInitialization] User Dir: $userPath")

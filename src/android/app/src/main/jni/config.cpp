@@ -281,8 +281,8 @@ void Config::ReadValues() {
     // Web Service
     NetSettings::values.web_api_url =
         sdl2_config->GetString("WebService", "web_api_url", "https://api.citra-emu.org");
-    NetSettings::values.citra_username = sdl2_config->GetString("WebService", "citra_username", "");
-    NetSettings::values.citra_token = sdl2_config->GetString("WebService", "citra_token", "");
+    NetSettings::values.mandarine_username = sdl2_config->GetString("WebService", "mandarine_username", "");
+    NetSettings::values.mandarine_token = sdl2_config->GetString("WebService", "mandarine_token", "");
 }
 
 void Config::Reload() {

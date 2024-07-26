@@ -1868,19 +1868,19 @@ bool GMainWindow::MakeShortcutIcoPath(const u64 program_id, const std::string_vi
     }
 
     // Create icon file path
-    out_icon_path /= (program_id == 0 ? fmt::format("citra-{}.{}", game_file_name, ico_extension)
-                                      : fmt::format("citra-{:016X}.{}", program_id, ico_extension));
+    out_icon_path /= (program_id == 0 ? fmt::format("mandarine-{}.{}", game_file_name, ico_extension)
+                                      : fmt::format("mandarine-{:016X}.{}", program_id, ico_extension));
     return true;
 }
 
 void GMainWindow::OnGameListCreateShortcut(u64 program_id, const std::string& game_path,
                                            GameListShortcutTarget target) {
-    // Get path to citra executable
+    // Get path to mandarine executable
     const QStringList args = QApplication::arguments();
-    std::filesystem::path citra_command = args[0].toStdString();
+    std::filesystem::path mandarine_command = args[0].toStdString();
     // If relative path, make it an absolute path
-    if (citra_command.c_str()[0] == '.') {
-        citra_command = FileUtil::GetCurrentDir().value_or("") + DIR_SEP + citra_command.string();
+    if (mandarine_command.c_str()[0] == '.') {
+        mandarine_command = FileUtil::GetCurrentDir().value_or("") + DIR_SEP + mandarine_command.string();
     }
 
     // Shortcut path
@@ -1936,7 +1936,7 @@ void GMainWindow::OnGameListCreateShortcut(u64 program_id, const std::string& ga
     // Warn once if we are making a shortcut to a volatile AppImage
     const std::string appimage_ending =
         std::string(Common::g_scm_rev).substr(0, 9).append(".AppImage");
-    if (citra_command.string().ends_with(appimage_ending) &&
+    if (mandarine_command.string().ends_with(appimage_ending) &&
         !UISettings::values.shortcut_already_warned) {
         if (CreateShortcutMessagesGUI(this, CREATE_SHORTCUT_MSGBOX_APPIMAGE_VOLATILE_WARNING,
                                       qt_game_title)) {
@@ -1954,7 +1954,7 @@ void GMainWindow::OnGameListCreateShortcut(u64 program_id, const std::string& ga
     const std::string categories = "Game;Emulator;Qt;";
     const std::string keywords = "3ds;Nintendo;";
 
-    if (CreateShortcutLink(shortcut_path, comment, out_icon_path, citra_command, arguments,
+    if (CreateShortcutLink(shortcut_path, comment, out_icon_path, mandarine_command, arguments,
                            categories, keywords, game_title)) {
         CreateShortcutMessagesGUI(this, CREATE_SHORTCUT_MSGBOX_SUCCESS, qt_game_title);
         return;
@@ -2307,7 +2307,7 @@ void GMainWindow::OnLoadComplete() {
 }
 
 void GMainWindow::OnMenuReportCompatibility() {
-    if (!NetSettings::values.citra_token.empty() && !NetSettings::values.citra_username.empty()) {
+    if (!NetSettings::values.mandarine_token.empty() && !NetSettings::values.mandarine_username.empty()) {
         CompatDB compatdb{this};
         compatdb.exec();
     } else {

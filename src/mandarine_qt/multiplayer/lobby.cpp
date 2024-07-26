@@ -57,9 +57,9 @@ Lobby::Lobby(Core::System& system_, QWidget* parent, QStandardItemModel* list,
 
     ui->nickname->setValidator(validation.GetNickname());
     ui->nickname->setText(UISettings::values.nickname);
-    if (ui->nickname->text().isEmpty() && !NetSettings::values.citra_username.empty()) {
+    if (ui->nickname->text().isEmpty() && !NetSettings::values.mandarine_username.empty()) {
         // Use Mandarine Web Service user name as nickname by default
-        ui->nickname->setText(QString::fromStdString(NetSettings::values.citra_username));
+        ui->nickname->setText(QString::fromStdString(NetSettings::values.mandarine_username));
     }
 
     // UI Buttons
@@ -170,11 +170,11 @@ void Lobby::OnJoinRoom(const QModelIndex& source) {
     QFuture<void> f = QtConcurrent::run([this, nickname, ip, port, password, verify_UID] {
         std::string token;
 #ifdef ENABLE_WEB_SERVICE
-        if (!NetSettings::values.citra_username.empty() &&
-            !NetSettings::values.citra_token.empty()) {
+        if (!NetSettings::values.mandarine_username.empty() &&
+            !NetSettings::values.mandarine_token.empty()) {
             WebService::Client client(NetSettings::values.web_api_url,
-                                      NetSettings::values.citra_username,
-                                      NetSettings::values.citra_token);
+                                      NetSettings::values.mandarine_username,
+                                      NetSettings::values.mandarine_token);
             token = client.GetExternalJWT(verify_UID).returned_data;
             if (token.empty()) {
                 LOG_ERROR(WebService, "Could not get external JWT, verification may fail");

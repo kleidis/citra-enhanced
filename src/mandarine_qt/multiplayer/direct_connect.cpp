@@ -33,9 +33,9 @@ DirectConnectWindow::DirectConnectWindow(Core::System& system_, QWidget* parent)
 
     ui->nickname->setValidator(validation.GetNickname());
     ui->nickname->setText(UISettings::values.nickname);
-    if (ui->nickname->text().isEmpty() && !NetSettings::values.citra_username.empty()) {
+    if (ui->nickname->text().isEmpty() && !NetSettings::values.mandarine_username.empty()) {
         // Use Mandarine Web Service user name as nickname by default
-        ui->nickname->setText(QString::fromStdString(NetSettings::values.citra_username));
+        ui->nickname->setText(QString::fromStdString(NetSettings::values.mandarine_username));
     }
     ui->ip->setValidator(validation.GetIP());
     ui->ip->setText(UISettings::values.ip);

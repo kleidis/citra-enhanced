@@ -107,7 +107,7 @@ class SetupFragment : Fragment() {
         pages.apply {
             add(
                 SetupPage(
-                    R.drawable.ic_citra_full,
+                    R.drawable.ic_mandarine_full,
                     R.string.welcome,
                     R.string.welcome_description,
                     0,
@@ -207,8 +207,8 @@ class SetupFragment : Fragment() {
             add(
                 SetupPage(
                     R.drawable.ic_home,
-                    R.string.select_citra_user_folder,
-                    R.string.select_citra_user_folder_description,
+                    R.string.select_mandarine_user_folder,
+                    R.string.select_mandarine_user_folder_description,
                     0,
                     true,
                     R.string.select,

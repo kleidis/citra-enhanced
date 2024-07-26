@@ -257,7 +257,7 @@ target_sources(mandarine-qt
 if (APPLE)
     set(DIST_DIR "../../dist/apple")
     set(APPLE_RESOURCES
-        "${DIST_DIR}/citra.icns"
+        "${DIST_DIR}/mandarine.icns"
         "${DIST_DIR}/LaunchScreen.storyboard"
         "${DIST_DIR}/launch_logo.png"
     )
@@ -269,11 +269,11 @@ if (APPLE)
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST "${DIST_DIR}/Info.plist.in"
         MACOSX_BUNDLE_BUNDLE_NAME "Mandarine"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.citra-emu.citra"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.mandarine3ds.mandarine"
         MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${BUILD_FULLNAME}"
         MACOSX_BUNDLE_LONG_VERSION_STRING "${BUILD_FULLNAME}"
-        MACOSX_BUNDLE_ICON_FILE "citra.icns"
+        MACOSX_BUNDLE_ICON_FILE "mandarine.icns"
         RESOURCE "${APPLE_RESOURCES}"
     )
 
@@ -305,7 +305,7 @@ endif()
 
 create_target_directory_groups(mandarine-qt)
 
-target_link_libraries(mandarine-qt PRIVATE audio_core citra_common citra_core input_common network video_core)
+target_link_libraries(mandarine-qt PRIVATE audio_core mandarine_common mandarine_core input_common network video_core)
 target_link_libraries(mandarine-qt PRIVATE Boost::boost nihstro-headers Qt6::Widgets Qt6::Multimedia Qt6::Concurrent)
 target_link_libraries(mandarine-qt PRIVATE ${PLATFORM_LIBRARIES} Threads::Threads)
 

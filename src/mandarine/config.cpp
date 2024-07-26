@@ -8,8 +8,8 @@
 #include <type_traits>
 #include <INIReader.h>
 #include <SDL.h>
-#include "citra/config.h"
-#include "citra/default_ini.h"
+#include "mandarine/config.h"
+#include "mandarine/default_ini.h"
 #include "common/file_util.h"
 #include "common/logging/backend.h"
 #include "common/logging/log.h"
@@ -350,8 +350,8 @@ void Config::ReadValues() {
     // Web Service
     NetSettings::values.web_api_url =
         sdl2_config->GetString("WebService", "web_api_url", "https://api.citra-emu.org");
-    NetSettings::values.citra_username = sdl2_config->GetString("WebService", "citra_username", "");
-    NetSettings::values.citra_token = sdl2_config->GetString("WebService", "citra_token", "");
+    NetSettings::values.mandarine_username = sdl2_config->GetString("WebService", "mandarine_username", "");
+    NetSettings::values.mandarine_token = sdl2_config->GetString("WebService", "mandarine_token", "");
 
     // Video Dumping
     Settings::values.output_format =

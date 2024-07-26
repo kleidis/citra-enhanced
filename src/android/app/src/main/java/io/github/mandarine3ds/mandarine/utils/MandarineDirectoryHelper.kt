@@ -18,11 +18,11 @@ import io.github.mandarine3ds.mandarine.viewmodel.HomeViewModel
  */
 class MandarineDirectoryHelper(private val fragmentActivity: FragmentActivity) {
     fun showMandarineDirectoryDialog(result: Uri, callback: SetupCallback? = null) {
-        val citraDirectoryDialog = MandarineDirectoryDialogFragment.newInstance(
+        val mandarineDirectoryDialog = MandarineDirectoryDialogFragment.newInstance(
             fragmentActivity,
             result.toString(),
             MandarineDirectoryDialogFragment.Listener { moveData: Boolean, path: Uri ->
-                val previous = PermissionsHandler.citraDirectory
+                val previous = PermissionsHandler.mandarineDirectory
                 // Do noting if user select the previous path.
                 if (path == previous) {
                     return@Listener
@@ -47,7 +47,7 @@ class MandarineDirectoryHelper(private val fragmentActivity: FragmentActivity) {
                 CopyDirProgressDialog.newInstance(fragmentActivity, previous, path, callback)
                     ?.show(fragmentActivity.supportFragmentManager, CopyDirProgressDialog.TAG)
             })
-        citraDirectoryDialog.show(
+        mandarineDirectoryDialog.show(
             fragmentActivity.supportFragmentManager,
             MandarineDirectoryDialogFragment.TAG
         )

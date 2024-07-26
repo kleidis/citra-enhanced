@@ -4,9 +4,9 @@
     <Version>1.0.0</Version>
     <Title>Mandarine Updater</Title>
     <Publisher>Mandarine Team</Publisher>
-    <!-- e.g. /home/<user>/.citra or /opt/citra if run as root -->
-    <TargetDir>@HomeDir@/.citra</TargetDir>
-    <AdminTargetDir>/opt/citra</AdminTargetDir>
+    <!-- e.g. /home/<user>/.mandarine or /opt/mandarine if run as root -->
+    <TargetDir>@HomeDir@/.mandarine</TargetDir>
+    <AdminTargetDir>/opt/mandarine</AdminTargetDir>
     <InstallerApplicationIcon>icon</InstallerApplicationIcon>
     <InstallerWindowIcon>icon.png</InstallerWindowIcon>
     <RemoteRepositories>

@@ -7,16 +7,16 @@
 #include <regex>
 #include <string>
 #include <thread>
-#include "citra/config.h"
-#include "citra/emu_window/emu_window_sdl2.h"
+#include "mandarine/config.h"
+#include "mandarine/emu_window/emu_window_sdl2.h"
 #ifdef ENABLE_OPENGL
-#include "citra/emu_window/emu_window_sdl2_gl.h"
+#include "mandarine/emu_window/emu_window_sdl2_gl.h"
 #endif
 #ifdef ENABLE_SOFTWARE_RENDERER
-#include "citra/emu_window/emu_window_sdl2_sw.h"
+#include "mandarine/emu_window/emu_window_sdl2_sw.h"
 #endif
 #ifdef ENABLE_VULKAN
-#include "citra/emu_window/emu_window_sdl2_vk.h"
+#include "mandarine/emu_window/emu_window_sdl2_vk.h"
 #endif
 #include "common/common_paths.h"
 #include "common/detached_tasks.h"

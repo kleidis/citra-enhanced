@@ -6,7 +6,7 @@
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-MANDARINE_ICON              ICON                    "../../dist/citra.ico"
+MANDARINE_ICON              ICON                    "../../dist/mandarine.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -14,4 +14,4 @@ MANDARINE_ICON              ICON                    "../../dist/citra.ico"
 // RT_MANIFEST
 //
 
-0                       RT_MANIFEST             "../../dist/citra.manifest"
+0                       RT_MANIFEST             "../../dist/mandarine.manifest"

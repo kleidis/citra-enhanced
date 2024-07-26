@@ -56,7 +56,7 @@ static void PrintHelp(const char* argv0) {
                  "--web-api-url       Mandarine Web API url\n"
                  "--ban-list-file     The file for storing the room ban list\n"
                  "--log-file          The file for storing the room log\n"
-                 "--enable-citra-mods Allow Mandarine Community Moderators to moderate on your room\n"
+                 "--enable-mandarine-mods Allow Mandarine Community Moderators to moderate on your room\n"
                  "-h, --help          Display this help and exit\n"
                  "-v, --version       Output version information and exit\n";
 }
@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
     u64 preferred_game_id = 0;
     u16 port = Network::DefaultRoomPort;
     u32 max_members = 16;
-    bool enable_citra_mods = false;
+    bool enable_mandarine_mods = false;
 
     static struct option long_options[] = {
         {"room-name", required_argument, 0, 'n'},
@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
         {"web-api-url", required_argument, 0, 'a'},
         {"ban-list-file", required_argument, 0, 'b'},
         {"log-file", required_argument, 0, 'l'},
-        {"enable-citra-mods", no_argument, 0, 'e'},
+        {"enable-mandarine-mods", no_argument, 0, 'e'},
         {"help", no_argument, 0, 'h'},
         {"version", no_argument, 0, 'v'},
         {0, 0, 0, 0},
@@ -235,7 +235,7 @@ int main(int argc, char** argv) {
                 log_file.assign(optarg);
                 break;
             case 'e':
-                enable_citra_mods = true;
+                enable_mandarine_mods = true;
                 break;
             case 'h':
                 PrintHelp(argv[0]);
@@ -289,18 +289,18 @@ int main(int argc, char** argv) {
         if (username.empty()) {
             std::cout << "Hosting a public room\n\n";
             NetSettings::values.web_api_url = web_api_url;
-            NetSettings::values.citra_username = UsernameFromDisplayToken(token);
-            username = NetSettings::values.citra_username;
-            NetSettings::values.citra_token = TokenFromDisplayToken(token);
+            NetSettings::values.mandarine_username = UsernameFromDisplayToken(token);
+            username = NetSettings::values.mandarine_username;
+            NetSettings::values.mandarine_token = TokenFromDisplayToken(token);
         } else {
             std::cout << "Hosting a public room\n\n";
             NetSettings::values.web_api_url = web_api_url;
-            NetSettings::values.citra_username = username;
-            NetSettings::values.citra_token = token;
+            NetSettings::values.mandarine_username = username;
+            NetSettings::values.mandarine_token = token;
         }
     }
-    if (!announce && enable_citra_mods) {
-        enable_citra_mods = false;
+    if (!announce && enable_mandarine_mods) {
+        enable_mandarine_mods = false;
         std::cout << "Can not enable Mandarine Moderators for private rooms\n\n";
     }
 
@@ -330,7 +330,7 @@ int main(int argc, char** argv) {
     if (std::shared_ptr<Network::Room> room = Network::GetRoom().lock()) {
         if (!room->Create(room_name, room_description, "", port, password, max_members, username,
                           preferred_game, preferred_game_id, std::move(verify_backend), ban_list,
-                          enable_citra_mods)) {
+                          enable_mandarine_mods)) {
             std::cout << "Failed to create room: \n\n";
             return -1;
         }
