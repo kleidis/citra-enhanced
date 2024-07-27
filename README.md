@@ -1,4 +1,4 @@
-### This is my fork of Citra Enhanced mostly kept for archival purposes because the owner is known to have "issues" with this stuff and is known to be a violator of open-source licenses
+### This is my fork of Citra Enhanced mostly kept for archival purposes because the owner is known to have "issues" with this stuff 
 
 **I might update it tho, cherry-picking stuff that interests me and releasing new versions** 
 
