@@ -1,8 +1,9 @@
-### This is my fork of Citra Enahnced mostly kept for achival purposes becuase the owner is known to have "issues" with this stuff and is knwon to be a violator of open source licenses
+### This is my fork of Citra Enhanced mostly kept for archival purposes because the owner is known to have "issues" with this stuff and is known to be a violator of open-source licenses
 
-**I might update it tho , cherry-picking stuff that interests me and releasing new versions** 
+**I might update it tho, cherry-picking stuff that interests me and releasing new versions** 
 
-Note: This repo was poorly cloned due to a certain saga, Let me know if issues exists as soon as you see thm.
+Note: The current master branch has the dog water attempt at a rebase still in it. In the future, I will rebase the master branch to 1.4.0 branch (I need to fix some issues)
+**Note: This repo was poorly cloned due to a certain saga, Let me know if issues exists as soon as you see thm.
 
 ___
 
